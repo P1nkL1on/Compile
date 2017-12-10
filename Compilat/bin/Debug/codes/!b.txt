@@ -1,0 +1,8 @@
+int S (int a);
+int aaa = 200;
+int b;
+
+int main (){
+	int x = 0;
+	return 0;
+}

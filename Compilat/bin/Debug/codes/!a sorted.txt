@@ -1,0 +1,24 @@
+#include <IO.txt>
+
+void sortArray (int* arr, int arr_length){
+	for (int i = 0; i < arr_length; i++){
+		int max = arr[i], maxindex = i;
+		for (int j = i + 1; j < arr_length; j++)
+			if (arr[j] > max){ max = arr[j]; maxindex = j; }
+		int temp = arr[maxindex];
+		arr[maxindex] = arr[i];
+		arr[i] = temp;
+	}
+}
+
+void traceArray (int* arr, int arr_length ){
+	for (int i = 0; i < arr_length; i++)
+		printf (i + " : " + arr[i] + "\n");
+}
+
+void main (int* argv, int* argc[]){
+	int arr[] = {10,8,4,3,7,11, 16,3,3,2,4};
+	printf ("Original array\n"); traceArray(arr,11);
+	sortArray (arr, 11);
+	printf ("Sorted array\n"); traceArray(arr,11);
+}

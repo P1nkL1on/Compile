@@ -1,0 +1,15 @@
+void printf(string s);
+
+void put (string s);
+
+void putstring (string s);
+
+void putchar (char c);
+
+// области локальной видимости 0 1 2 в каждой функции
+
+// в .NET
+
+// LLVM
+
+//

@@ -1,0 +1,6 @@
+#include <IO.txt>
+
+int main (){
+	printf ("loler 1234");
+	return 0;
+}

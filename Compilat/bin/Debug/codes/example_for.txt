@@ -1,0 +1,19 @@
+int main (){
+	string res = "";
+	for (int i = 0, double summ = 0.0; i < 10; i++){
+		for (int j = 0; j < i; j++){
+			summ *= j;
+			summ += i;
+			int d = 10;
+		}
+		int sto = 100;
+		while (sto > 0)
+			{sto--; int d = 20;}
+		res += summ;
+		for (int j = 0;j < i; j++){
+			summ /= i;
+			int d = 30;
+		}
+	}
+	return 0;
+}

@@ -1,0 +1,23 @@
+int fac (int x, int y, int z){
+	return x + y *z;
+}
+
+
+double fac (int x, int y, double z){
+	return x + y *z;
+}
+
+void main (){
+	double fac1 = fac (10,10,"15");
+
+}
+
+
+//____________________________
+
+int main (string S){
+	
+	
+
+	return 0;
+}

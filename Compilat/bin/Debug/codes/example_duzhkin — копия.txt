@@ -1,0 +1,20 @@
+void ewq()
+{
+}
+
+int main(int argc, char* argv) 
+{
+	
+
+
+	for (;;)
+	{
+		for (int i; i < 123;) 
+		{
+			for (char c; ; c++)
+			{
+			}
+		}
+	}
+	return !(4-2) + 'c' || !!7;
+}

@@ -1,0 +1,4 @@
+int main(){
+	if ( 1==2 ){4=3;}else{3=4;}
+	return 0;
+}

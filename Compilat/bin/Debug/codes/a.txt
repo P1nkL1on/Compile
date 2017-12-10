@@ -1,0 +1,15 @@
+int* ret (double* x){
+	int a=  10;
+	return &a;
+}
+
+
+int* ret (double* xx1, double xx2, double xx3, string S){
+	int a = 100;
+	return &a;
+}
+
+int *main (int* a, int**b){
+	double d = 10;
+	return ret(&d,2,3.0, '1') + ret(&d, 1, false, "lol") - 100 && 10 + ret(&d);
+}

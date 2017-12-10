@@ -1,0 +1,15 @@
+double* foo (string S, int x);
+
+int main (int a1, int a2){
+	
+	string s;
+	string s1;
+	string s2;
+	return 0;
+}
+
+double* foo (string S, int x){
+	double res = x * x;
+	double* pres = &res;
+	return pres;
+}

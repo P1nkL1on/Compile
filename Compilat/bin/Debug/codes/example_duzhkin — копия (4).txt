@@ -1,0 +1,41 @@
+void ewq()
+{
+}
+
+int main(int argc, char** argv) 
+{
+	for (;;)
+	{
+		for (int i; i < 123;) 
+		{
+			for (char c; ; c++)
+			{
+			}
+		}
+	}
+	while(1)
+	{
+		while(1.1)
+		{
+		}
+	for (i = 4; 4 < 5-- && qwe || ewq; i -= 2);
+	;
+	;
+	{}
+	;
+	if (123) 
+		if (5 && 123 - 7 + t--);
+		else
+		{
+			qwe / 12;
+		}
+	1;
+        qwe = &re + 12;
+	&gfdfg = asdw;
+        dfgherg = *werfdf++;
+
+	int w = 10;
+	int q;
+        q = *&w;
+	q = &*ere;	
+}

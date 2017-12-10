@@ -1,0 +1,21 @@
+#include <IO.txt>
+
+void a(string b){
+	// do something
+}
+
+int main(){
+
+string s  = "100";
+string* sp = &s;
+
+
+printf(s);
+printf("100");
+printf(*sp);
+
+{
+
+}
+return 0;
+}

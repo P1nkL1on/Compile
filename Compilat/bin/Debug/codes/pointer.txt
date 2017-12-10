@@ -1,0 +1,28 @@
+/*int* S (){
+	int a = 10;
+	return &a;
+}*/
+
+int D (int* a, int* b){
+	*a = 10;
+	*b = 5;
+	return *a + *b;
+}
+
+int F(int a){
+	return a*a;
+}
+
+int main (){
+	int a[10] = {5,6,7};
+
+	int originalA = 100;
+	int originalB = 120;
+
+	int* Ap = &originalA;
+	int* Bp = &originalB;
+
+	int reS = D(Ap, Bp);
+	int res = F(originalA);
+	return 0;
+}

@@ -1,0 +1,14 @@
+int main (){
+	int o;
+
+	int a, b, a1, b2;
+	double ***c, d = 20, e = 1, f[,,], g;
+	int x = 10, y = 100;
+
+	string S1 = "1  4", S2 = S1 + S1, S3 = S2 + S1 + "su   ck";
+
+	f[0,4,1] = 10;
+	&c;
+
+	return 0;
+}
