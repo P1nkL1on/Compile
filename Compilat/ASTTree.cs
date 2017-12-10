@@ -23,14 +23,13 @@ namespace Compilat
                 return;
 
             clr = ConsoleColor.Black;
-            Console.WriteLine("\nTokens:");
-            for (int i = 0; i < tokens.Count; i++)
-                tokens[i].TraceMore(0);
+            //Console.WriteLine("\nTokens:");
+            //for (int i = 0; i < tokens.Count; i++)
+            //    tokens[i].TraceMore(0);
 
             Console.WriteLine("\nVariables");
             for (int i = 0; i < variables.Count; i++)
                 variables[i].TraceMore(0);
-
 
             Console.WriteLine("\nFunctions:");
             for (int i = 0; i < funcs.Count; i++)

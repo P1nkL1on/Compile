@@ -4,6 +4,9 @@ int * where (){
 }
 
 int main (){
+	int* b = where();
+	int c = 10 + *b;
+	*(where());
 	*where() = 20;
 	return 1;
 }

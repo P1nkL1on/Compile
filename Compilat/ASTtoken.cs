@@ -80,7 +80,7 @@ namespace Compilat
                             // finally trying to find variable
                             string varName = s;
                             int found = -1;
-                            ASTvariable foundedVar = new ASTvariable(new ValueType(VT.Cunknown), "NONE", 0);
+                            ASTvariable foundedVar = new ASTvariable(new ValueType(VT.Cunknown), "NONE", -1, new AdressType(-1, VAT.Unknown));
 
                             for (int i = 0; i < ASTTree.variables.Count; i++)
                                 if (ASTTree.variables[i].name == varName && MISC.isVariableAvailable(i))
@@ -137,32 +137,69 @@ namespace Compilat
         public int getPointerLevel { get { return 0; } }
     }
 
+    public enum VAT
+    {
+        Local = 3,
+        Global = 1,
+        Parameter = 2,
+        Unknown = 0
+    }
+    public struct AdressType
+    {
+        int adressId;
+        VAT typ;
+        public AdressType(int id, VAT typ)
+        {
+            this.adressId = id; this.typ = typ;
+        }
+        public override string ToString()
+        {
+            string res = "";
+            switch (typ)
+            {
+                case VAT.Global:
+                    res += "GLBL";
+                    break;
+                case VAT.Local:
+                    res += " LCL";
+                    break;
+                case VAT.Parameter:
+                    res += " PRM";
+                    break;
+                default:
+                    res += "????";
+                    break;
+            }
+            return res += " " + adressId;
+        }
+    }
+
     public class ASTvariable : IASTtoken
     {
 
         ValueType valType;
         public string name;
 
-        int adress;
+        AdressType adress;
         string localSpace;
 
         public ASTvariable()
         {
             this.valType = new ValueType(VT.Cunknown);
             this.name = "-";
-            this.adress = -1;
+            this.adress = new AdressType(-1, VAT.Unknown);
             this.localSpace = string.Join("/", MISC.nowParsing.ToArray());
         }
-        public ASTvariable(ValueType vt, string name, int level)
+        public ASTvariable(ValueType vt, string name, int level, AdressType adress)
         {
             this.valType = vt;
             this.name = name;
             // check variable name with function collision
             for (int i = 0; i < ASTTree.funcs.Count; i++)
                 if (name == ASTTree.funcs[i].getName)
-                    throw new Exception("Variable \""+name+"\" can not conflict with function : "+ ASTTree.funcs[i].getArgsString);
+                    throw new Exception("Variable \"" + name + "\" can not conflict with function : " + ASTTree.funcs[i].getArgsString);
             //
-            this.adress = ASTTree.variables.Count;
+            this.adress = adress;//ASTTree.variables.Count;
             this.localSpace = string.Join("/", MISC.nowParsing.ToArray());
         }
 
@@ -176,7 +213,8 @@ namespace Compilat
         }
         public virtual void TraceMore(int depth)
         {
-            MISC.ConsoleWrite(String.Format("\t{0}\t\t{1}\t\t", pointerMuch(valType.pointerLevel) + name, getValueType.ToString().Substring(1)), ConsoleColor.DarkGreen);
+            MISC.ConsoleWrite(String.Format("{2}\t{0}\t\t{1}\t\t",
+                pointerMuch(valType.pointerLevel) + name, getValueType.ToString().Substring(1), adress), ConsoleColor.DarkGreen);
             MISC.ConsoleWriteLine(localSpace, ConsoleColor.DarkMagenta);
         }
 

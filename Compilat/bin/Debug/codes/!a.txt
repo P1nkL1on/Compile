@@ -1,0 +1,31 @@
+int a = 6;
+int func(int x)
+{
+    return a + x;
+}
+
+int b = 34;
+
+int main()
+{
+    return func(b);
+}
+
+void func1(int v1, int v2)
+{
+    v1 = v2;
+}
+
+int main2()
+{
+    bool flag;
+    func1(1,1);
+    if (flag && 1)
+    {
+        while (3 == 8 | 1) 
+        {
+            for (int i = 0; i < 10; i = i + 1);
+        }
+    }
+    return 0;
+}

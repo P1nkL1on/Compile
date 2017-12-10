@@ -60,15 +60,7 @@ namespace Compilat
                 return new Adrs(gettingAdressOf);
             }
 
-            try
-            {
-                return new ASTFunctionCall(s);
-            }
-            catch (Exception e)
-            {
-                if (e.Message.IndexOf("is not a function") < 0)
-                    throw new Exception(e.Message);
-            }
+            
 
             int varType = Math.Max((s.IndexOf("int") >= 0) ? 2 : -1, Math.Max((s.IndexOf("double") >= 0) ? 5 : -1, Math.Max((s.IndexOf("char") >= 0) ? 3 : -1,
                 Math.Max((s.IndexOf("string") >= 0) ? 5 : -1, (s.IndexOf("bool") >= 0) ? 3 : -1))));
@@ -99,6 +91,15 @@ namespace Compilat
                 IOperation pointTo = ParseFrom(s.Substring(1, s.Length - 1));
                 return new GetValByAdress(pointTo, (pointTo).returnTypes());
                 throw new Exception("Invalid pointer selected!");
+            }
+            try
+            {
+                return new ASTFunctionCall(s);
+            }
+            catch (Exception e)
+            {
+                if (e.Message.IndexOf("is not a function") < 0)
+                    throw new Exception(e.Message);
             }
             if (s.LastIndexOf("]") == s.Length - 1 && s.IndexOf("[") > 0)
             {

@@ -84,7 +84,7 @@ namespace Compilat
             }
             //_________________________________________
 
-            ASTvariable NV = new ASTvariable(defineType, varName, pointerLevel);
+            ASTvariable NV = new ASTvariable(defineType, varName, pointerLevel, MISC.GetCurrentVariableAdressType());
             ASTTree.variables.Add(NV);
             MISC.pushVariable(ASTTree.variables.Count - 1);
 
@@ -177,7 +177,7 @@ namespace Compilat
     }
     class GetValByAdress : MonoOperation
     {
-        public ValueType pointerType;
+        //public ValueType pointerType;
         public GetValByAdress(IOperation adress, ValueType retType, bool stop)
         {
             operationString = "get";

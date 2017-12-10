@@ -11,6 +11,9 @@ namespace Compilat
     {
         static void Main(string[] args)
         {
+            Console.SetWindowSize(Console.LargestWindowWidth  * 2 / 3, Console.LargestWindowHeight);
+            Console.SetWindowPosition(0, 0);
+
             FLoader fl = new FLoader("codes", "modules");
             fl.ShowIO();
         }

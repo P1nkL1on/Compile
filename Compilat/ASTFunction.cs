@@ -20,7 +20,6 @@ namespace Compilat
         {
             //TypeConvertion tpcv = new TypeConvertion("IIBDDBDIBIDBCCB", 2);
             string s = S.Substring(0, S.IndexOf('('));
-                   //tpcvString = "";
             List<ValueType> vtList = new List<ValueType>();
 
 
@@ -44,6 +43,7 @@ namespace Compilat
                 List<string> vars = MISC.splitBy(MISC.getIn(S, S.IndexOf('(')), ',');
                 input = new List<Define>();
                 MISC.GoDeep("FDEFINED");
+                MISC.ChangeAdressType(VAT.Parameter);
 
                 for (int i = 0; i < vars.Count; i++)
                 {
@@ -67,9 +67,11 @@ namespace Compilat
                     try
                     {
                         MISC.GoDeep("FUNCTION$" + name + "$" + returnTypes());
+                        MISC.ChangeAdressType(VAT.Local);
                         string actionCode = MISC.getIn(S, S.IndexOf('{'));
                         actions = new CommandOrder(actionCode, ';');
                         MISC.GoBack();
+                        MISC.ChangeAdressType(VAT.Global);
                     }
                     catch (Exception e)
                     {

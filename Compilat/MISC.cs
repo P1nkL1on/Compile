@@ -9,6 +9,24 @@ namespace Compilat
 {
     public class MISC
     {
+        public static VAT currentAdressType = VAT.Global;
+        public static int[] currentAdressTypes = new int[] {0,0,0 };
+        public static int adressIDToAdd = 0;
+        // global , local , params
+
+        public static void ChangeAdressType (VAT forwhat)
+        {
+            currentAdressType = forwhat;
+            if (forwhat == VAT.Global) adressIDToAdd = 0;
+            if (forwhat == VAT.Local) { adressIDToAdd = 1; currentAdressTypes[1] = 0; }
+            if (forwhat == VAT.Parameter) { adressIDToAdd = 2; currentAdressTypes[2] = 0; }
+        }
+        public static AdressType GetCurrentVariableAdressType()
+        {
+            AdressType res = new AdressType(currentAdressTypes[adressIDToAdd], currentAdressType);
+            currentAdressTypes[adressIDToAdd]++;
+            return res;
+        }
 
         public static void ClearStack()
         {
