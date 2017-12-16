@@ -15,6 +15,11 @@ namespace Compilat
             IOperation[] children = new IOperation[2] { left, right };
             returnType = TypeConverter.TryConvert(tpcv, ref children);
             a = children[0]; b = children[1];
+            returnType = new ValueType(VT.Cboolean);
+        }
+        public override string ToLLVM(int depth)
+        {
+            return LLVM.BinaryToLLVM(depth, "sle", a, b, returnType);
         }
     }
     class Less : BinaryOperation
@@ -26,6 +31,11 @@ namespace Compilat
             IOperation[] children = new IOperation[2] { left, right };
             returnType = TypeConverter.TryConvert(tpcv, ref children);
             a = children[0]; b = children[1];
+            returnType = new ValueType(VT.Cboolean);
+        }
+        public override string ToLLVM(int depth)
+        {
+            return LLVM.BinaryToLLVM(depth, "slt", a, b, returnType);
         }
     }
     class MrEq : BinaryOperation
@@ -37,6 +47,11 @@ namespace Compilat
             IOperation[] children = new IOperation[2] { left, right };
             returnType = TypeConverter.TryConvert(tpcv, ref children);
             a = children[0]; b = children[1];
+            returnType = new ValueType(VT.Cboolean);
+        }
+        public override string ToLLVM(int depth)
+        {
+            return LLVM.BinaryToLLVM(depth, "sge", a, b, returnType);
         }
     }
     class More : BinaryOperation
@@ -48,6 +63,11 @@ namespace Compilat
             IOperation[] children = new IOperation[2] { left, right };
             returnType = TypeConverter.TryConvert(tpcv, ref children);
             a = children[0]; b = children[1];
+            returnType = new ValueType(VT.Cboolean);
+        }
+        public override string ToLLVM(int depth)
+        {
+            return LLVM.BinaryToLLVM(depth, "sgt", a, b, returnType);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Compilat
     public class MISC
     {
         public static int LLVMtmpNumber = 0;
-
+        public static int GlobalOperatorNumber = 0;
 
 
 

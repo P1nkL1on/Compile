@@ -9,7 +9,8 @@ namespace Compilat
 
     public abstract class IOperator : ICommand
     {
-        protected IOperation condition;   // if (...){}
+        protected int GlobalOperatorNumber;
+        public Equal condition;   // if (...){}
         protected List<CommandOrder> actions;  // {....} {....} {....} {....} {....}
         // for IF there are only 2, for SWITCH is infinite + DEFAULT
 
@@ -42,7 +43,6 @@ namespace Compilat
                     MISC.finish = true;
                 actions[i].Trace(depth + 1);
             }
-
         }
     }
 
@@ -64,6 +64,7 @@ namespace Compilat
                 actions[1].MergeWith(new CommandOrder(parseElseAction, ';'));
                 MISC.GoBack();
             }
+            GlobalOperatorNumber = ++MISC.GlobalOperatorNumber;
         }
 
         public override void Trace(int depth)
@@ -82,6 +83,21 @@ namespace Compilat
                 MISC.finish = true;
                 actions[1].Trace(depth + 2);
             }
+        }
+
+        public override string ToLLVM(int depth)
+        {
+            //
+            LLVM.AddToCode(String.Format("{0}If{1}:\n", MISC.tabsLLVM(depth), GlobalOperatorNumber));
+            string condLine = condition.getTrueEqual().ToLLVM(depth + 1);
+            LLVM.AddToCode(String.Format("{0}%cond{1} = icmp {2}\n", MISC.tabsLLVM(depth + 1), GlobalOperatorNumber, condLine));
+            LLVM.AddToCode(String.Format("{0}br i1 %cond{1}, label %Then{1}, label %Else{1}\n", MISC.tabsLLVM(depth + 1), GlobalOperatorNumber));
+            LLVM.AddToCode(String.Format("{0}Then{1}:\n", MISC.tabsLLVM(depth), GlobalOperatorNumber));
+            LLVM.AddToCode(actions[0].ToLLVM(depth + 1));
+            LLVM.AddToCode(String.Format("{0}Else{1}:\n", MISC.tabsLLVM(depth), GlobalOperatorNumber));
+            LLVM.AddToCode(actions[1].ToLLVM(depth + 1));
+            return "";
+
         }
     }
 

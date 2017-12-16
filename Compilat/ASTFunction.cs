@@ -116,9 +116,9 @@ namespace Compilat
             string param = "";
             for (int i = 0; i < input.Count; i++)
                 param += input[i].returnTypes().ToLLVM() + " %" + input[i].varName + ((i < input.Count - 1) ? ", " : "");
-            LLVM.AddToCode(String.Format("{0}define {1} @{2}({3})", MISC.tabsLLVM(depth), retType.ToLLVM(), getName, param) + "{\nentry:\n");//  + code + "}";
+            LLVM.AddToCode(String.Format("{0}define {1} @{2}({3})", MISC.tabsLLVM(depth), retType.ToLLVM(), getName, param) + "{\n" + MISC.tabsLLVM(depth) + "entry:\n");//  + code + "}";
             LLVM.AddToCode(actions.ToLLVM(depth + 1));
-            return "}";
+            return MISC.tabsLLVM(depth) + "}";
         }
         //
         public string getName

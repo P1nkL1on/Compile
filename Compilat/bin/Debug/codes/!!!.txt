@@ -18,7 +18,7 @@ double main (int X, int Y){
 	return 1.0 - 2.0 / 3.0;
 }
 */
-
+/*
 void main (){
 	1 + 1;
 	2 + 2;
@@ -38,11 +38,59 @@ int B (){
 int mul_add(int x, int y, int z) {
   return x * y + z;
 }
-/*
+
 define i32 @mul_add(i32 %x, i32 %y, i32 %z) {
 entry:
   %tmp = mul i32 %x, %y
   %tmp2 = add i32 %tmp, %z
   ret i32 %tmp2
 }
-*/
+Test:
+  %cond = icmp eq i32 %a, %b
+  br i1 %cond, label %IfEqual, label %IfUnequal
+IfEqual:
+  ret i32 1
+IfUnequal:
+  ret i32 0
+
+void main(){
+	if ((5 == 6) && (1.0 == 2.0) || (1 == 1)){
+		1+1+2;
+		double X = 10.0 / 5.0;
+	}else{
+		3/3;
+		double D = 1.0 - 444.44444123456789 + 1.0 + 2.0 + 3.0 * 5.0;
+		if (10 == 20)
+			int d2 = 20;
+		else
+			if (20 == 30)
+				10 + 10;
+			else
+				20 + 20;
+	}
+}*/
+
+int Foo (int X, int Y){
+	
+	return X + Y;
+}
+
+void main (){
+	int D = 10, Y = 20;
+	30 + 30;
+	int X = Foo(1,2 + 2 + 3);
+}
+/*
+ %retval = call i32 @test(i32 %argc)
+  call i32 (i8 *, ...)* @printf(i8 * %msg, i32 12, i8 42)      ; yields i32
+  %X = tail call i32 @foo()                                    ; yields i32
+  %Y = tail call fastcc i32 @foo()  ; yields i32
+  call void %foo(i8 97 signext)
+
+  %struct.A = type { i32, i8 }
+  %r = call %struct.A @foo()                        ; yields { 32, i8 }
+  %gr = extractvalue %struct.A %r, 0                ; yields i32
+  %gr1 = extractvalue %struct.A %r, 1               ; yields i8
+  %Z = call void @foo() noreturn                    ; indicates that %foo never returns normally
+  %ZZ = call zeroext i32 @bar()                     ; Return value is %zero extended
+  */

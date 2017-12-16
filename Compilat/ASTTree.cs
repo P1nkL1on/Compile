@@ -16,7 +16,37 @@ namespace Compilat
 
         public static ConsoleColor clr = ConsoleColor.Black;
 
-        
+
+        public void TraceLLVM()
+        {
+            MISC.ConsoleWriteLine("\nLLVM\n\n", ConsoleColor.Magenta);
+            ToLLVM();
+            string types = "i1_i32_i64_i16_f32_f64",
+                   opers = "add_mul_sub_sdiv_fdiv_fadd_fmul_fsub_br_eq_ne_sgt_sge_slt_sle_or_and_icmp_";
+            string code = LLVM.CurrentCode;
+            for (int i = 0; i < code.Length; i++)
+            {
+                if ((" {}(),").IndexOf(code[i]) >= 0)
+                {
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    if (code.Substring(i).IndexOf(':') < code.Substring(i).IndexOf('\n') && code.Substring(i).IndexOf(':') > 0)
+                        Console.ForegroundColor = ConsoleColor.Magenta; 
+                }
+                if (code[i] == '%') Console.ForegroundColor = ConsoleColor.Green;
+                if (code[i] == '@') Console.ForegroundColor = ConsoleColor.Red;
+                
+                string nowword = (code.Substring(i).IndexOf(" ")< 0)? "" : code.Substring(i).Remove(code.Substring(i).IndexOf(" "));
+                if (nowword.Length > 1)
+                {
+                    if (types.IndexOf(nowword) >= 0)
+                        Console.ForegroundColor = ConsoleColor.DarkGreen;
+                    if (opers.IndexOf(nowword) >= 0)
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                }
+                
+                Console.Write(code[i]);
+            }
+        }
         public String ToLLVM()
         {
             LLVM.CurrentCode = "";
@@ -66,7 +96,7 @@ namespace Compilat
                     funcs[i].Trace(0);
                 }
             //
-            MISC.ConsoleWriteLine("\nLLVM\n\n" + ToLLVM(), ConsoleColor.Magenta);
+            TraceLLVM();
         }
         static List<char> brStack = new List<char>();
         void ClearTree()

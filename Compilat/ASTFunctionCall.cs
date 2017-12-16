@@ -109,7 +109,12 @@ namespace Compilat
         }
         public string ToLLVM(int depth)
         {
-            return String.Format("{0} ...", MISC.tabsLLVM(depth));
+            string param = "";
+            for (int i = 0; i < arguments.Count; i++)
+            {
+                param += arguments[i].returnTypes().ToLLVM() + " " + arguments[i].ToLLVM(depth) + ((i < arguments.Count - 1) ? ", " : "");
+            }
+            return String.Format("call {0} @{1}({2})", returnTypes().ToLLVM(), ASTTree.funcs[functionCallNumber].getName, param);
         }
         public void Trace(int depth)
         {
@@ -126,6 +131,7 @@ namespace Compilat
                 arguments[i].Trace(depth + 1);
             }
         }
+        
         public ValueType returnTypes()
         {
             return ASTTree.funcs[functionCallNumber].returnTypes();
