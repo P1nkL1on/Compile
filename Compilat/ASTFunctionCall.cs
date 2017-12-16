@@ -111,10 +111,11 @@ namespace Compilat
         {
             string param = "";
             for (int i = 0; i < arguments.Count; i++)
-            {
-                param += arguments[i].returnTypes().ToLLVM() + " " + arguments[i].ToLLVM(depth) + ((i < arguments.Count - 1) ? ", " : "");
-            }
-            return String.Format("call {0} @{1}({2})", returnTypes().ToLLVM(), ASTTree.funcs[functionCallNumber].getName, param);
+                param += arguments[i].returnTypes().ToLLVM() + " " 
+                    + arguments[i].ToLLVM(depth) + ((i < arguments.Count - 1) ? ", " : "");
+             LLVM.AddToCode(String.Format("{5}%tmp{4} = call {0} @{1}({2})\n", returnTypes().ToLLVM(), ASTTree.funcs[functionCallNumber].getName, 
+                 param, MISC.tabsLLVM(depth), ++MISC.LLVMtmpNumber, MISC.tabsLLVM(depth)));
+             return "%tmp" + MISC.LLVMtmpNumber;
         }
         public void Trace(int depth)
         {
