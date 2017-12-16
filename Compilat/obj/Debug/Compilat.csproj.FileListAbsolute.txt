@@ -30,3 +30,9 @@ D:\Compile\Compilat\obj\Debug\Compilat.csprojResolveAssemblyReference.cache
 D:\Compile\Compilat\obj\Debug\Compilat.csproj.CoreCompileInputs.cache
 D:\Compile\Compilat\obj\Debug\Compilat.exe
 D:\Compile\Compilat\obj\Debug\Compilat.pdb
+D:\microsoft visual studio projects\Compile\Compilat\bin\Debug\Compilat.exe.config
+D:\microsoft visual studio projects\Compile\Compilat\obj\Debug\Compilat.exe
+D:\microsoft visual studio projects\Compile\Compilat\obj\Debug\Compilat.pdb
+D:\microsoft visual studio projects\Compile\Compilat\obj\Debug\Compilat.csprojResolveAssemblyReference.cache
+D:\microsoft visual studio projects\Compile\Compilat\bin\Debug\Compilat.exe
+D:\microsoft visual studio projects\Compile\Compilat\bin\Debug\Compilat.pdb

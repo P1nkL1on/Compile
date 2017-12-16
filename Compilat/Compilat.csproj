@@ -54,6 +54,7 @@
     <Compile Include="ICycle.cs" />
     <Compile Include="IOperator.cs" />
     <Compile Include="IOperation.cs" />
+    <Compile Include="LLVM.cs" />
     <Compile Include="MISC.cs" />
     <Compile Include="MonoOperations.cs" />
     <Compile Include="Program.cs" />

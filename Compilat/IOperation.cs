@@ -33,6 +33,10 @@ namespace Compilat
             //else
             //    Console.WriteLine(MISC.tabs(depth + 1) + " NULL");
         }
+        public virtual string ToLLVM(int depth)
+        {
+            return String.Format("{0} ...", MISC.tabsLLVM(depth));
+        }
         public static IOperation ParseFrom(string s)
         {
             if (s.IndexOf('{') == 0 && s.LastIndexOf('}') == s.Length - 1)
@@ -159,6 +163,12 @@ namespace Compilat
         static int lastIndex = -1;
         protected IOperation a;   // pointer
         protected IOperation b;   // pointer
+
+        public virtual string ToLLVM(int depth)
+        {
+            return String.Format("{0} ...", MISC.tabsLLVM(depth));
+        }
+
         public virtual void Trace(int depth)
         {
             Console.Write(MISC.tabs(depth)); MISC.ConsoleWrite(operationString, ConsoleColor.Yellow); MISC.ConsoleWriteLine("   " + returnType.ToString(), ConsoleColor.DarkGreen);

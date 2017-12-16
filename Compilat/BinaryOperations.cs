@@ -24,6 +24,10 @@ namespace Compilat
             returnType = TypeConverter.TryConvertSumm(tpcv, ref children);
             a = children[0]; b = children[1];
         }
+        public override string ToLLVM(int depth)
+        {
+            return LLVM.BinaryToLLVM(depth, "add", a, b, returnType);
+        }
     }
     class Diff : BinaryOperation
     {

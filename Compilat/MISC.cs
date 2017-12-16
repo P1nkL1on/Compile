@@ -9,6 +9,11 @@ namespace Compilat
 {
     public class MISC
     {
+        public static int LLVMtmpNumber = 0;
+
+
+
+
         public static VAT currentAdressType = VAT.Global;
         public static int[] currentAdressTypes = new int[] {0,0,0 };
         public static int adressIDToAdd = 0;
@@ -26,6 +31,13 @@ namespace Compilat
             AdressType res = new AdressType(currentAdressTypes[adressIDToAdd], currentAdressType);
             currentAdressTypes[adressIDToAdd]++;
             return res;
+        }
+
+        public static void ResetAdressing()
+        {
+            currentAdressType = VAT.Global;
+       currentAdressTypes = new int[] {0,0,0 };
+        adressIDToAdd = 0;
         }
 
         public static void ClearStack()
@@ -336,6 +348,14 @@ namespace Compilat
             finish = false;
             return nowOpen;
         }
+        public static string tabsLLVM(int depth)
+        {
+            string res = "";
+            for (int i = 0; i < depth; i++)
+                res += "  ";
+            return res;
+        }
+
         public static void separate(string S, string separator, ref string leftpart, ref string rightpart, int separatorIndex)
         {
             leftpart = ""; rightpart = "";

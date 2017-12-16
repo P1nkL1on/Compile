@@ -14,6 +14,10 @@ namespace Compilat
         {
             Console.WriteLine(MISC.tabs(depth) + operationString);
         }
+        public virtual string ToLLVM(int depth)
+        {
+            return String.Format("{0} ...", MISC.tabsLLVM(depth));
+        }
         public static IOperation ParseFrom(string s)
         {
             if (s.IndexOf ("break") == 0)
@@ -56,10 +60,13 @@ namespace Compilat
         }
         public override void Trace(int depth)
         {
-            
             Console.WriteLine(MISC.tabs(depth) + operationString);
             MISC.finish = true;
             a.Trace(depth + 1);
+        }
+        public override string ToLLVM(int depth)
+        {
+            return String.Format("{0}ret {1}", MISC.tabsLLVM(depth), a.ToLLVM(depth));
         }
     }
     class Cnt : UniqOperation

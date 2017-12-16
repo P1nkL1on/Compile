@@ -80,7 +80,7 @@ namespace Compilat
                     //}
                     defineType = defineType.TypeOfPointerToThis();
                 }
-               
+
             }
             //_________________________________________
 
@@ -112,6 +112,10 @@ namespace Compilat
             a.Trace(depth + 1);
             MISC.finish = true;
             b.Trace(depth + 1);
+        }
+        public override string ToLLVM(int depth)
+        {
+            return "%" + varName;
         }
     }
 
@@ -177,59 +181,22 @@ namespace Compilat
     }
     class GetValByAdress : MonoOperation
     {
-        //public ValueType pointerType;
-        public GetValByAdress(IOperation adress, ValueType retType, bool stop)
-        {
-            operationString = "get";
-            a = adress;
-            returnType = retType;
-        }
+        ASTvariable variable;
         public GetValByAdress(IOperation adress, ValueType retType)
         {
             operationString = "get";
             a = adress;
             try
             {
-                operationString = ASTTree.variables[(int)((adress as ASTvalue).getValue)].name;
-                returnType = ASTTree.variables[(int)((adress as ASTvalue).getValue)].returnTypes();
+                variable = ASTTree.variables[(int)((adress as ASTvalue).getValue)];
+                operationString = variable.name;
+                returnType = variable.returnTypes();
                 return;
             }
             catch (Exception e)
             {
                 returnType = retType.TypeOfPointedByThis();
             };
-
-            //a = adress;
-            ////if (a.returnTypes() != ValueType.Cadress)
-            ////    throw new Exception("You can get value only by number of memory slot!");
-
-            //returnType = retType;
-
-            //if (retType == VT.Cadress)
-            //{
-            //    //IOperation dep = a; int res = -1;
-            //    //while ((a as GetValByAdress) != null)
-            //    //{
-            //    //    a.Trace(0);
-            //    //    res = (a as GetValByAdress).GetAdress();
-            //    //    a = (a as GetValByAdress).a;
-            //    //}
-            //    //if (res >= 0)
-            //    //    returnType = ASTTree.variables[res].returnTypes();
-
-            //    //Console.WriteLine(a.returnTypes() + " /// " + res + " //// " + returnType.ToString());
-            //    //Console.ReadKey();
-            //    IOperation dep = a; int res = -1;
-            //    while (a.returnTypes() == ValueType.Cadress)
-            //    {
-            //        a.Trace(0);
-            //        res = ((a as GetValByAdress) != null) ? (a as GetValByAdress).GetAdress() : (int)((a as ASTvalue).getValue);
-            //        a = ASTTree.variables[res];
-            //        returnType = a.returnTypes();
-            //        dep = new GetValByAdress(new ASTvalue(ValueType.Cadress, (object)res), returnType, true);
-            //    }
-            //    a = dep;
-            //}
 
         }
 
@@ -244,15 +211,30 @@ namespace Compilat
             }
             return -1;
         }
-
+        public override string ToLLVM(int depth)
+        {
+            return variable.ToLLVM();
+        }
         public override void Trace(int depth)
         {
-            Console.Write(MISC.tabs(depth)); MISC.ConsoleWrite(operationString, ConsoleColor.Green); MISC.ConsoleWriteLine(" " + returnType.ToString().Substring(1), ConsoleColor.DarkGreen);
-            if (a != null) //if (returnType == VT.Cadress)
+            if (variable == null)
             {
-                MISC.finish = true;//
-                a.Trace(depth + 1);
+                Console.Write(MISC.tabs(depth));
+                MISC.ConsoleWrite(operationString, ConsoleColor.DarkGreen);
+                MISC.ConsoleWrite(" "+returnType.ToString().Substring(1), ConsoleColor.Red);//
+                MISC.ConsoleWriteLine(" by adress", ConsoleColor.DarkGreen);
+                if (a != null)
+                {
+                    MISC.finish = true;//
+                    a.Trace(depth + 1);
+                }
             }
+            else
+            {
+                //MISC.finish = true;
+                variable.Trace(depth);
+            }
+
         }
     }
 
@@ -304,7 +286,7 @@ namespace Compilat
     {
         public Conv(IOperation val, ValueType toType)
         {
-            operationString = String.Format("{0}<-", toType.ToString().Substring(1));
+            operationString = String.Format("{0}", toType.ToString().Substring(1));
             a = val;
             returnType = toType;
         }

@@ -1,8 +1,11 @@
 char* C = "okay";
-
+int glob = 2;
 
 int main (){
 	C + 10;
-	string D = C;
+	string D = C + glob;
 	return C[0] + 1;
 }
+
+
+double globDouble = 10.0;

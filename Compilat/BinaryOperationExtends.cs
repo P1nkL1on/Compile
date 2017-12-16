@@ -33,6 +33,10 @@ namespace Compilat
                 return new List<IOperation>();
             return (b as StructureDefine).values;
         }
+        public override string ToLLVM(int depth)
+        {
+            return MISC.tabsLLVM(depth) + a.ToLLVM(depth) +" = "+ b.ToLLVM(depth);
+        }
     }
 
     class Equal : BinaryOperation

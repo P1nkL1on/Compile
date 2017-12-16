@@ -99,7 +99,10 @@ namespace Compilat
             }
             ASTTree.tokens.Add(this);
         }
-
+        public virtual string ToLLVM(int depth)
+        {
+            return String.Format(returnTypes().ToLLVM() + " " + data.ToString() );
+        }
         public void Trace(int depth)
         {
             string br = "";
@@ -135,6 +138,7 @@ namespace Compilat
         public ValueType returnTypes() { return valType; }
 
         public int getPointerLevel { get { return 0; } }
+        
     }
 
     public enum VAT
@@ -202,15 +206,22 @@ namespace Compilat
             this.adress = adress;//ASTTree.variables.Count;
             this.localSpace = string.Join("/", MISC.nowParsing.ToArray());
         }
+        public string ToLLVM(int depth)
+        {
+            return String.Format("{0} ...", MISC.tabsLLVM(depth));
+        }
 
         public virtual void Trace(int depth)
         {
-            //Console.WriteLine(String.Format("{0}${1}   [{2}]", MISC.tabs(depth), name, valType.ToString()));
             Console.Write(MISC.tabs(depth));
             MISC.ConsoleWrite(pointerMuch(valType.pointerLevel), ConsoleColor.Red);
             MISC.ConsoleWrite(name, ConsoleColor.Green);
-            MISC.ConsoleWriteLine("\t" + getValueType.ToString().Substring(1) + "" + adress, ConsoleColor.DarkGreen);
+            MISC.ConsoleWriteLine("\t" + getValueType.ToString().Substring(1) + "" + adress, ConsoleColor.Red);
             
+        }
+        public virtual string ToLLVM()
+        {
+            return "%" + name;
         }
         public virtual void TraceMore(int depth)
         {

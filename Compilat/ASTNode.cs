@@ -9,5 +9,6 @@ namespace Compilat
     public interface IAstNode
     {
         void Trace(int depth);
+        string ToLLVM(int depth);
     }
 }

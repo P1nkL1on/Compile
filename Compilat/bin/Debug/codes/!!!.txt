@@ -1,5 +1,27 @@
-переправить точные глобалы локалы
+//int I = 10;
+//int J = 20;
+//int D = 30;
 
-прочекать чтобы при перезапуске все работало нормально
+//int main (char A, char B, int C){
+//	int ABC = A + B + C;
+//	int IJD = I + J - D;
+//	int ABCIJD = ABC * IJD;
+	
+//	return ABCIJD / 20 + 15 + 156 - 11;
+//}
 
-сделать чтобы в дереве все исало нормально
+int main (int X, int Y){
+	int a = 10, b = 15, c = 20;
+	int D = a + b + c + X + a + b + c + Y;
+	return D + D + D + b;
+}
+
+
+/*
+define i32 @mul_add(i32 %x, i32 %y, i32 %z) {
+entry:
+  %tmp = mul i32 %x, %y
+  %tmp2 = add i32 %tmp, %z
+  ret i32 %tmp2
+}
+*/

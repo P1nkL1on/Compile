@@ -17,6 +17,10 @@ namespace Compilat
         {
             Console.WriteLine(MISC.tabs(depth) + "Default operator trace");
         }
+        public virtual string ToLLVM(int depth)
+        {
+            return String.Format("{0} ...", MISC.tabsLLVM(depth));
+        }
     }
 
     public class OperatorZone : IOperator

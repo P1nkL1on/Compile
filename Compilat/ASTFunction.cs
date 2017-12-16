@@ -35,10 +35,10 @@ namespace Compilat
                 while (name[0] == '*') { returnPointerLevel++; name = name.Substring(1); }
 
                 if (name.Length == 0) throw new Exception("Invalid function name!");
-                
+
 
                 // !
-                retType=  new ValueType(Define.detectType(type_name[0]), returnPointerLevel);
+                retType = new ValueType(Define.detectType(type_name[0]), returnPointerLevel);
                 // try to parse signature and actions
                 List<string> vars = MISC.splitBy(MISC.getIn(S, S.IndexOf('(')), ',');
                 input = new List<Define>();
@@ -53,14 +53,14 @@ namespace Compilat
                 }
                 //tpcvString += returnTypes().ToString()[1].ToString().ToUpper();
                 tpcv = new TypeConvertion(vtList, retType);
-                
+
 
 
                 // check name uniq!
                 //bool foundFunc = false;
                 for (int i = 0; i < ASTTree.funcs.Count; i++)
                     if (ASTTree.funcs[i].actions.CommandCount > 0 && MISC.CompareFunctionSignature(ASTTree.funcs[i], this))
-                        throw new Exception("Can not redefine a function \""+name+" : "+this.getArgsString+"\"!");
+                        throw new Exception("Can not redefine a function \"" + name + " : " + this.getArgsString + "\"!");
 
                 if (S.IndexOf('{') >= 0)
                 {
@@ -75,7 +75,7 @@ namespace Compilat
                     }
                     catch (Exception e)
                     {
-                        throw new Exception("Problem in function \""+name+"\"\n" + e.Message);
+                        throw new Exception("Problem in function \"" + name + "\"\n" + e.Message);
                     }
                 }
                 else
@@ -109,6 +109,15 @@ namespace Compilat
             MISC.ConsoleWriteLine(returnTypes().ToString(), ConsoleColor.Cyan);
             MISC.finish = true;
             actions.Trace(depth + 1);
+        }
+        public virtual string ToLLVM(int depth)
+        {
+            string param = "";
+            for (int i = 0; i < input.Count; i++)
+                param += input[i].returnTypes().ToLLVM() + " %" + input[i].varName + ((i < input.Count - 1)? ", " : "");
+            LLVM.AddToCode(String.Format("{0}define {1} @{2}({3})", MISC.tabsLLVM(depth), retType.ToLLVM(), getName, param)+"{\nentry:\n");//  + code + "}";
+            LLVM.AddToCode(actions.ToLLVM(depth + 1));
+            return "}";
         }
         //
         public string getName

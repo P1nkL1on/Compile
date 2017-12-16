@@ -15,6 +15,10 @@ namespace Compilat
         {
             Console.WriteLine(MISC.tabs(depth) + "Default cycle trace");
         }
+        public virtual string ToLLVM(int depth)
+        {
+            return String.Format("{0} ...", MISC.tabsLLVM(depth));
+        }
     }
 
     public class CycleFor : ICycle

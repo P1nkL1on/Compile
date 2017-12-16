@@ -33,15 +33,17 @@ namespace Compilat
                 try
                 {
                     commands.Add(ParseCommand2(commandArr[i]));
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     if (e.Message.IndexOf("#MDS:") == 0)
                     {
                         string parseAdDefines = e.Message.Substring(5);
                         List<string> addedDefines = commandSplitter(parseAdDefines);
                         for (int j = 0; j < addedDefines.Count; j++) commands.Add(ParseCommand2(addedDefines[j]));  // inta;intb;intc;  -> 3 commands
-                    } else throw e; // any another bug
-                        
+                    }
+                    else throw e; // any another bug
+
                 }
             }
 
@@ -196,7 +198,7 @@ namespace Compilat
                     this.MergeWith(new CommandOrder(spp[0], ','));
                     if (spp[1] == "") spp[1] = "true";  // condition
                     CommandOrder actions = new CommandOrder(allOther, ';'); actions.MergeWith(new CommandOrder(spp[2], ','));
-                    
+
 
                     CycleFor cf = new CycleFor(spp[1], actions);
                     MISC.GoBack();
@@ -325,6 +327,14 @@ namespace Compilat
                     MISC.finish = true;
                 commands[i].Trace(depth + 1);
             }
+        }
+
+        public virtual string ToLLVM(int depth)
+        {
+            string res = "";
+            for (int i = 0; i < commands.Count; i++)
+                LLVM.AddToCode( String.Format("{0}\n", commands[i].ToLLVM(depth + 1)));
+            return res;
         }
 
         public int CommandCount

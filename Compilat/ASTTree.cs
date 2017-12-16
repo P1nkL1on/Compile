@@ -16,6 +16,18 @@ namespace Compilat
 
         public static ConsoleColor clr = ConsoleColor.Black;
 
+        
+        public String ToLLVM()
+        {
+            LLVM.CurrentCode = "";
+            for (int i = 0; i < funcs.Count; i++)
+                if (funcs[i] != null)
+                {
+                    LLVM.AddToCode(funcs[i].ToLLVM(0) + "\n\n");
+                    LLVM.AddToCode("\n");
+                }
+            return LLVM.CurrentCode;
+        }
         public void Trace()
         {
 
@@ -53,6 +65,8 @@ namespace Compilat
                     clr = (funcs[i].getName.ToLower() == "main") ? ConsoleColor.DarkRed : ConsoleColor.DarkGreen;
                     funcs[i].Trace(0);
                 }
+            //
+            MISC.ConsoleWriteLine("\nLLVM\n\n" + ToLLVM(), ConsoleColor.Magenta);
         }
         static List<char> brStack = new List<char>();
         void ClearTree()
@@ -62,6 +76,8 @@ namespace Compilat
             variables = new List<ASTvariable>();
             MISC.ClearStack();
             GlobalVars = new CommandOrder();
+            MISC.ResetAdressing();
+            MISC.LLVMtmpNumber = 0;
         }
 
         public ASTTree(string s)
@@ -202,6 +218,24 @@ namespace Compilat
             for (int i = 0; i < pointerLevel; i++)
                 res += "*";
             return res;
+        }
+        public string ToLLVM()
+        {
+            switch (rootType)
+            {
+                case VT.Cint:
+                    return "i32";
+                case VT.Cdouble:
+                    return "f64";
+                case VT.Cchar:
+                    return "i8";
+                case VT.Cboolean:
+                    return "i1";
+                case VT.Cvoid:
+                    return "void";
+                default:
+                    return "???";
+            }
         }
 
         public ValueType TypeOfPointerToThis()

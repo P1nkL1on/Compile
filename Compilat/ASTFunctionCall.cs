@@ -107,7 +107,10 @@ namespace Compilat
                     throw new Exception(ErrString);
             }
         }
-
+        public string ToLLVM(int depth)
+        {
+            return String.Format("{0} ...", MISC.tabsLLVM(depth));
+        }
         public void Trace(int depth)
         {
             //Console.WriteLine(String.Format("{0}{1}  #{3}[{2}]", MISC.tabs(depth), ASTTree.funcs[functionCallNumber].getName,
