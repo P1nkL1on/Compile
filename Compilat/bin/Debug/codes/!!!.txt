@@ -9,14 +9,35 @@
 	
 //	return ABCIJD / 20 + 15 + 156 - 11;
 //}
-
-int main (int X, int Y){
+/*
+double main (int X, int Y){
 	int a = 10, b = 15, c = 20;
-	int D = a + b + c + X + a + b + c + Y;
-	return D + D + D + b;
+	int D = (a + b + c) * X + (a + b + c) * Y;
+	double DD = 15.0 + 17.0 + 3.333;
+	double Ddevided = DD / D;
+	return 1.0 - 2.0 / 3.0;
+}
+*/
+
+void main (){
+	1 + 1;
+	2 + 2;
 }
 
+void A (){
+	6 - 6;
+	int D = 6 * 6;
+	//return;
+}
 
+int B (){
+	A(); A(); main();
+	return 1;
+}
+
+int mul_add(int x, int y, int z) {
+  return x * y + z;
+}
 /*
 define i32 @mul_add(i32 %x, i32 %y, i32 %z) {
 entry:

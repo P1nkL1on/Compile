@@ -225,16 +225,25 @@ namespace Compilat
         }
 
 
-        public static void GoBack()
+        public static bool GoBack()
         {
             string func = nowParsing[nowParsing.Count - 1];
+            bool NoNeedToAddReturn = true;
             if (func.IndexOf("FUNCTION") == 0)
+            {
                 if (func.IndexOf("$C") > 0 && func.IndexOf("$Cvoid") < 0 && func.IndexOf("R#") < 0)
+                {
                     throw new Exception("No return in non-void function \"" + func.Substring(9, func.IndexOf("$", 9) - 9) + "\"!");
+                }
+                if (func.IndexOf("$Cvoid") >= 0 && func.IndexOf("R#") < 0)
+                    NoNeedToAddReturn = false;
+            }
+
 
             nowParsing.RemoveAt(nowParsing.Count - 1);
             levelVariables.RemoveAt(levelVariables.Count - 1);
             DrawIerch();
+            return NoNeedToAddReturn;
         }
         public static void pushVariable(int variableNumber)
         {

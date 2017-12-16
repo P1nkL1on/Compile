@@ -26,6 +26,7 @@ namespace Compilat
                 return (new Cnt());
             if (s.IndexOf("return") == 0)
                 return (new Ret(BinaryOperation.ParseFrom(s.Substring(6))));
+
             throw new Exception("Can not parse uniq keyword:\t " + MISC.StringFirstLetters(s, 20, true));
         }
 
@@ -58,15 +59,23 @@ namespace Compilat
             // if everything is good than add a ret to last function
             MISC.addReturnToLastFunction();
         }
+        /// <summary>
+        /// VOID RETURN THAT ADDED AUTOMATICLY DO NOT USE IN SELF PARSING
+        /// </summary>
+        public Ret()
+        {
+            a = new ASTvalue(new ValueType(VT.Cvoid), null);
+            returnType = new ValueType(VT.Cvoid);
+            operationString = "RETURN VOID";
+        }
         public override void Trace(int depth)
         {
             Console.WriteLine(MISC.tabs(depth) + operationString);
-            MISC.finish = true;
-            a.Trace(depth + 1);
+            if (a.returnTypes() != VT.Cvoid) { MISC.finish = true; a.Trace(depth + 1); }
         }
         public override string ToLLVM(int depth)
         {
-            return String.Format("{0}ret {1}", MISC.tabsLLVM(depth), a.ToLLVM(depth));
+            return String.Format("{0}ret {1}", MISC.tabsLLVM(depth), (a.returnTypes() == VT.Cvoid)? "void" : a.returnTypes().ToLLVM() + " " + a.ToLLVM(depth));
         }
     }
     class Cnt : UniqOperation

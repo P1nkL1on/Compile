@@ -101,8 +101,15 @@ namespace Compilat
         }
         public virtual string ToLLVM(int depth)
         {
-            return String.Format(returnTypes().ToLLVM() + " " + data.ToString() );
+            return String.Format("{0}",
+                (returnTypes() == new ValueType(VT.Cdouble)?
+                (data.ToString() + ((data.ToString().IndexOf(",") < 0)? "," : "")).Replace(',','.').PadRight(6, '0')    // недостающие нули в записи с плавающей запятой
+                : data.ToString() ));
         }
+        //public virtual string ToLLVMwtType()
+        //{
+        //    return String.Format("{0} {1}", returnTypes().ToLLVM(), ToLLVM());
+        //}
         public void Trace(int depth)
         {
             string br = "";

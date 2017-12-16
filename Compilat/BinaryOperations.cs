@@ -26,7 +26,7 @@ namespace Compilat
         }
         public override string ToLLVM(int depth)
         {
-            return LLVM.BinaryToLLVM(depth, "add", a, b, returnType);
+            return LLVM.BinaryToLLVM(depth, (returnType != VT.Cdouble)? "add" : "fadd", a, b, returnType);
         }
     }
     class Diff : BinaryOperation
@@ -38,6 +38,10 @@ namespace Compilat
             IOperation[] children = new IOperation[2] { left, right };
             returnType = TypeConverter.TryConvertSumm(tpcv, ref children);
             a = children[1]; b = children[0];
+        }
+        public override string ToLLVM(int depth)
+        {
+            return LLVM.BinaryToLLVM(depth, (returnType != VT.Cdouble) ? "sub" : "fsub", a, b, returnType);
         }
     }
 
@@ -51,6 +55,10 @@ namespace Compilat
             returnType = TypeConverter.TryConvert(tpcv, ref children);
             a = children[0]; b = children[1];
         }
+        public override string ToLLVM(int depth)
+        {
+            return LLVM.BinaryToLLVM(depth, (returnType != VT.Cdouble) ? "mul" : "fmul", a, b, returnType);
+        }
     }
 
     class Qout : BinaryOperation
@@ -62,6 +70,10 @@ namespace Compilat
             IOperation[] children = new IOperation[2] { left, right };
             returnType = TypeConverter.TryConvert(tpcv, ref children);
             a = children[0]; b = children[1];
+        }
+        public override string ToLLVM(int depth)
+        {
+            return LLVM.BinaryToLLVM(depth, (returnType != VT.Cdouble) ? "sdiv" : "fdiv", a, b, returnType);
         }
     }
 }

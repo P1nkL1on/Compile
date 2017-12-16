@@ -35,7 +35,7 @@ namespace Compilat
         }
         public override string ToLLVM(int depth)
         {
-            return MISC.tabsLLVM(depth) + a.ToLLVM(depth) +" = "+ b.ToLLVM(depth);
+            return MISC.tabsLLVM(depth) + a.ToLLVM(depth) +" = "+ b.returnTypes().ToLLVM() + " " + b.ToLLVM(depth);
         }
     }
 

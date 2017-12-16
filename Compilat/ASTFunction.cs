@@ -70,7 +70,8 @@ namespace Compilat
                         MISC.ChangeAdressType(VAT.Local);
                         string actionCode = MISC.getIn(S, S.IndexOf('{'));
                         actions = new CommandOrder(actionCode, ';');
-                        MISC.GoBack();
+                        if (!MISC.GoBack())
+                            actions.MergeWith(new CommandOrder(new ICommand[] { new Ret() }));
                         MISC.ChangeAdressType(VAT.Global);
                     }
                     catch (Exception e)
@@ -80,8 +81,8 @@ namespace Compilat
                 }
                 else
                     actions = new CommandOrder();
-
                 MISC.GoBack();
+
                 return;
             }
             // check contain of Return function
@@ -114,8 +115,8 @@ namespace Compilat
         {
             string param = "";
             for (int i = 0; i < input.Count; i++)
-                param += input[i].returnTypes().ToLLVM() + " %" + input[i].varName + ((i < input.Count - 1)? ", " : "");
-            LLVM.AddToCode(String.Format("{0}define {1} @{2}({3})", MISC.tabsLLVM(depth), retType.ToLLVM(), getName, param)+"{\nentry:\n");//  + code + "}";
+                param += input[i].returnTypes().ToLLVM() + " %" + input[i].varName + ((i < input.Count - 1) ? ", " : "");
+            LLVM.AddToCode(String.Format("{0}define {1} @{2}({3})", MISC.tabsLLVM(depth), retType.ToLLVM(), getName, param) + "{\nentry:\n");//  + code + "}";
             LLVM.AddToCode(actions.ToLLVM(depth + 1));
             return "}";
         }
