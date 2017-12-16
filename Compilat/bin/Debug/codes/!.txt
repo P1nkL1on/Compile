@@ -1,0 +1,8 @@
+char* C = "okay";
+
+
+int main (){
+	C + 10;
+	string D = C;
+	return C[0] + 1;
+}

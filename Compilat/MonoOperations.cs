@@ -250,7 +250,7 @@ namespace Compilat
             Console.Write(MISC.tabs(depth)); MISC.ConsoleWrite(operationString, ConsoleColor.Green); MISC.ConsoleWriteLine(" " + returnType.ToString().Substring(1), ConsoleColor.DarkGreen);
             if (a != null) //if (returnType == VT.Cadress)
             {
-                MISC.finish = true;
+                MISC.finish = true;//
                 a.Trace(depth + 1);
             }
         }

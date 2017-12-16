@@ -6,7 +6,7 @@ int func(int x)
 
 int b = 34;
 
-int main()
+int main(int* arg, string* argc)
 {
     return func(b);
 }
@@ -16,10 +16,11 @@ void func1(int v1, int v2)
     v1 = v2;
 }
 
-int main2()
+int main2(int* arg, string* argc, double d1, double d2, string S, string SS)
 {
     bool flag;
     func1(1,1);
+    int x,y,z,x1,x2,x3,x4;
     if (flag && 1)
     {
         while (3 == 8 | 1) 

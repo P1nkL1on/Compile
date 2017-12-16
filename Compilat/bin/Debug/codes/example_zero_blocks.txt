@@ -13,7 +13,7 @@ int main(){
 		int a = 20;
 		int b = 20;
 		int c = 30;
-		summ2 = a + b + c + DDDDD;
+		summ2 = a + b + c;// + DDDDD;
 	}
 	int diff = summ - summ2;
 	return 0;

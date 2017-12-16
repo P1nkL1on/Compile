@@ -1,0 +1,6 @@
+D:\Compile\Compilat\bin\Release\Compilat.exe.config
+D:\Compile\Compilat\bin\Release\Compilat.exe
+D:\Compile\Compilat\bin\Release\Compilat.pdb
+D:\Compile\Compilat\obj\Release\Compilat.csproj.CoreCompileInputs.cache
+D:\Compile\Compilat\obj\Release\Compilat.exe
+D:\Compile\Compilat\obj\Release\Compilat.pdb

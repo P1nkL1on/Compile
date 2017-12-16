@@ -201,7 +201,6 @@ namespace Compilat
             string res = rootType.ToString();
             for (int i = 0; i < pointerLevel; i++)
                 res += "*";
-
             return res;
         }
 
@@ -244,7 +243,10 @@ namespace Compilat
             {
                 return false;
             }
-
+            if (obj1.rootType == VT.Cstring && obj2.rootType == VT.Cchar && obj2.pointerLevel == obj1.pointerLevel + 1)
+                return true;
+            if (obj2.rootType == VT.Cstring && obj1.rootType == VT.Cchar && obj1.pointerLevel == obj2.pointerLevel + 1)
+                return true;
             return (obj1.pointerLevel == obj2.pointerLevel && obj1.rootType == obj2.rootType);
         }
 

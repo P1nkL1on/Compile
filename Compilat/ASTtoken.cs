@@ -209,7 +209,8 @@ namespace Compilat
             Console.Write(MISC.tabs(depth));
             MISC.ConsoleWrite(pointerMuch(valType.pointerLevel), ConsoleColor.Red);
             MISC.ConsoleWrite(name, ConsoleColor.Green);
-            MISC.ConsoleWriteLine("\t[" + getValueType.ToString() + "]", ConsoleColor.DarkGreen);
+            MISC.ConsoleWriteLine("\t" + getValueType.ToString().Substring(1) + "" + adress, ConsoleColor.DarkGreen);
+            
         }
         public virtual void TraceMore(int depth)
         {
