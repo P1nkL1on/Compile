@@ -78,7 +78,8 @@ int Foo (int X, int Y){
 void main (){
 	int D = 10, Y = 20;
 	30 + 30;
-	int X = Foo(1,2 + 2 + 3);
+	int DD =0 ;
+	int X = Foo(1,2 + 2 + 3 + DD);
 }
 /*
  %retval = call i32 @test(i32 %argc)

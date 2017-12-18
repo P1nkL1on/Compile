@@ -35,7 +35,7 @@ namespace Compilat
             if (vt == VT.Cboolean) clr = ConsoleColor.Gray;
             if (vt == VT.Cadress) clr = ConsoleColor.DarkGray;
         }
-        public ASTvalue(string s)
+        public ASTvalue(string s, bool calledFromDefined)
         {
             string nums = "-1234567890.";
             bool isnum = true;
@@ -83,7 +83,7 @@ namespace Compilat
                             ASTvariable foundedVar = new ASTvariable(new ValueType(VT.Cunknown), "NONE", -1, new AdressType(-1, VAT.Unknown));
 
                             for (int i = 0; i < ASTTree.variables.Count; i++)
-                                if (ASTTree.variables[i].name == varName && MISC.isVariableAvailable(i))
+                                if (ASTTree.variables[i].name == varName && MISC.isVariableAvailable(i, calledFromDefined))
                                 { foundedVar = ASTTree.variables[i]; found = i; break; }
 
                             if (found < 0)
@@ -193,9 +193,11 @@ namespace Compilat
 
         AdressType adress;
         string localSpace;
+        
 
         public ASTvariable()
         {
+
             this.valType = new ValueType(VT.Cunknown);
             this.name = "-";
             this.adress = new AdressType(-1, VAT.Unknown);

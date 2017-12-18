@@ -16,6 +16,18 @@ namespace Compilat
         //
         public TypeConvertion tpcv;
         //
+        static Define GetDefineFromString (string s)
+        {
+            int varType = Math.Max((s.IndexOf("int") >= 0) ? 2 : -1, Math.Max((s.IndexOf("double") >= 0) ? 5 : -1, Math.Max((s.IndexOf("char") >= 0) ? 3 : -1,
+                Math.Max((s.IndexOf("string") >= 0) ? 5 : -1, (s.IndexOf("bool") >= 0) ? 3 : -1))));
+
+            if (varType >= 0)
+            {
+                s = s.Insert(varType + 1, "$");
+                return new Define(s, true);
+            }
+            throw new Exception("Incorrect signature!");
+        }
         public ASTFunction(string S)
         {
             //TypeConvertion tpcv = new TypeConvertion("IIBDDBDIBIDBCCB", 2);
@@ -47,7 +59,8 @@ namespace Compilat
 
                 for (int i = 0; i < vars.Count; i++)
                 {
-                    input.Add((Define)MonoOperation.ParseFrom(vars[i]));
+                    //input.Add((Define)MonoOperation.ParseFrom(vars[i]));
+                    input.Add(GetDefineFromString(vars[i]));
                     vtList.Add((input[input.Count - 1] as Define).returnTypes());
                     //tpcvString += vars[i][0].ToString().ToUpper();
                 }

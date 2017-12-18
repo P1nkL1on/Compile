@@ -11,7 +11,7 @@ namespace Compilat
         ValueType defineType;
 
         public string varName;
-        public Define(string s)
+        public Define(string s, bool autoAssume)
         {
             //string firstPart = s.Substring(0, s.IndexOf("$") + 1);  // int&a,b
             //while (s.IndexOf(',') > 0)
@@ -87,6 +87,8 @@ namespace Compilat
             ASTvariable NV = new ASTvariable(defineType, varName, pointerLevel, MISC.GetCurrentVariableAdressType());
             ASTTree.variables.Add(NV);
             MISC.pushVariable(ASTTree.variables.Count - 1);
+            if (autoAssume)
+                MISC.defineVariable(ASTTree.variables.Count - 1);
 
             ASTTree.tokens.Add(NV);
             a = NV;
@@ -221,7 +223,7 @@ namespace Compilat
             {
                 Console.Write(MISC.tabs(depth));
                 MISC.ConsoleWrite(operationString, ConsoleColor.DarkGreen);
-                MISC.ConsoleWrite(" "+returnType.ToString().Substring(1), ConsoleColor.Red);//
+                MISC.ConsoleWrite(" " + returnType.ToString().Substring(1), ConsoleColor.Red);//
                 MISC.ConsoleWriteLine(" by adress", ConsoleColor.DarkGreen);
                 if (a != null)
                 {

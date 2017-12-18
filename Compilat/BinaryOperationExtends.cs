@@ -17,6 +17,26 @@ namespace Compilat
             returnType = TypeConverter.TryConvertAsum(ref children);
             a = children[0]; b = children[1]; ;
             requiredUpdate = "none";
+            //
+            int foundNumber = -1;
+            for (int i = 0; i < ASTTree.variables.Count; i++)
+            {
+                if ((a as Define) != null && ASTTree.variables[i].name == (a as Define).varName)
+                {
+                    foundNumber = i;
+                    break;
+                }
+                if (a as GetValByAdress != null)
+                {
+                    foundNumber = (a as GetValByAdress).GetAdress();
+                    break;
+                }
+            }
+            if (foundNumber < 0)
+                throw new Exception("Assumming not a variable!");
+            else
+                MISC.defineVariable(foundNumber);
+            //
         }
         public string GetAssumableName
         {
@@ -35,10 +55,10 @@ namespace Compilat
         }
         public override string ToLLVM(int depth)
         {
-            return MISC.tabsLLVM(depth) 
-                + a.ToLLVM(depth) 
+            return MISC.tabsLLVM(depth)
+                + a.ToLLVM(depth)
                 + " = "
-                + ((b as ASTvalue != null)? b.returnTypes().ToLLVM() + " " : "")
+                + ((b as ASTvalue != null) ? b.returnTypes().ToLLVM() + " " : "")
                 + b.ToLLVM(depth);
         }
     }
@@ -48,7 +68,7 @@ namespace Compilat
         public Equal(IOperation left, IOperation right)
         {
             operationString = "==";
-            IOperation[] children = new IOperation[2] {left, right };
+            IOperation[] children = new IOperation[2] { left, right };
             returnType = TypeConverter.TryConvertEqual(ref children);
             a = children[0]; b = children[1];
             returnType = new ValueType(VT.Cboolean);

@@ -15,11 +15,11 @@ namespace Compilat
 
 
         public static VAT currentAdressType = VAT.Global;
-        public static int[] currentAdressTypes = new int[] {0,0,0 };
+        public static int[] currentAdressTypes = new int[] { 0, 0, 0 };
         public static int adressIDToAdd = 0;
         // global , local , params
 
-        public static void ChangeAdressType (VAT forwhat)
+        public static void ChangeAdressType(VAT forwhat)
         {
             currentAdressType = forwhat;
             if (forwhat == VAT.Global) adressIDToAdd = 0;
@@ -36,8 +36,8 @@ namespace Compilat
         public static void ResetAdressing()
         {
             currentAdressType = VAT.Global;
-       currentAdressTypes = new int[] {0,0,0 };
-        adressIDToAdd = 0;
+            currentAdressTypes = new int[] { 0, 0, 0 };
+            adressIDToAdd = 0;
         }
 
         public static void ClearStack()
@@ -249,18 +249,39 @@ namespace Compilat
         {
             if (levelVariables.Count == 0)
                 levelVariables.Add(new List<int>());
-            levelVariables[levelVariables.Count - 1].Add(variableNumber);
+            levelVariables[levelVariables.Count - 1].Add(-variableNumber - 1);
             DrawIerch();
 
             return;
         }
-        public static bool isVariableAvailable(int variableNumber)
+        public static void defineVariable(int variableNumber)
         {
             for (int i = 0; i < levelVariables.Count; i++)
                 for (int j = 0; j < levelVariables[i].Count; j++)
-                    if (levelVariables[i][j] == variableNumber)
-                        return true;
+                    if (-levelVariables[i][j] == variableNumber + 1)
+                    {
+                        levelVariables[i][j] *= -1;
+                        break;
+                    }
+            DrawIerch();
+
+            return;
+        }
+        public static bool isVariableAvailable(int variableNumber, bool anywayAvailable)
+        {
+            for (int i = 0; i < levelVariables.Count; i++)
+                for (int j = 0; j < levelVariables[i].Count; j++)
+                    if (Math.Abs(levelVariables[i][j]) == variableNumber + 1)
+                    {
+                        if (anywayAvailable || levelVariables[i][j] >= 0)
+                            return true;
+                        throw new Exception("Using a variable, that was never assumed!");
+                    }
             return false;
+        }
+        public static bool isVariableAvailable(int variableNumber)
+        {
+            return isVariableAvailable(variableNumber, false);
         }
 
         public static bool isLast(string ss)
@@ -302,7 +323,7 @@ namespace Compilat
                 for (int j = 0; j < levelVariables[i].Count; j++)
                     Console.Write(" " + levelVariables[i][j]);
             }
-            Console.ReadKey();//Thread.Sleep(1500);
+            Thread.Sleep(750);
         }
 
         public static bool CompareFunctionSignature(ASTFunction f1, ASTFunction f2)
@@ -421,7 +442,7 @@ namespace Compilat
             for (int i = 0; i < s.Length; i++)
             {
                 if (s[i] == '[') { level++; if (level == 1) continue; }
-                if (s[i] == ']') { level--; if (level == 0) { res.Add(current); current = ""; continue;}  }
+                if (s[i] == ']') { level--; if (level == 0) { res.Add(current); current = ""; continue; } }
                 if (s[i] == ',' && level == 1) { res.Add(current); current = ""; continue; }
                 if (level > 0) current += s[i];
 

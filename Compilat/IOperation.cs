@@ -37,6 +37,7 @@ namespace Compilat
         {
             return String.Format("{0} ...", MISC.tabsLLVM(depth));
         }
+        public static bool callDefined = false;
         public static IOperation ParseFrom(string s)
         {
             if (s.IndexOf('{') == 0 && s.LastIndexOf('}') == s.Length - 1)
@@ -72,22 +73,7 @@ namespace Compilat
             if (varType >= 0)
             {
                 s = s.Insert(varType + 1, "$");
-                return new Define(s);
-                //string firstPart = s.Substring(0, s.IndexOf("$"));  // int&a,b
-                //bool multipleDefines = false;
-                //while (s.IndexOf(',') > 0)
-                //{
-                //    int at = s.IndexOf(',');
-                //    s = s.Substring(0, s.IndexOf(',')) + ';' + firstPart + s.Substring(s.IndexOf(',') + 1);
-                //    multipleDefines = true;
-                //}
-                //if (!multipleDefines)
-                //    return new Define(s);
-                //else
-                //{
-                //    s = s.Remove(s.IndexOf('$'), 1);
-                //    throw new Exception("#MDS:" + s);
-                //}
+                return new Define(s, false);
             }
 
             if (s.IndexOf("*") == 0)
@@ -135,7 +121,7 @@ namespace Compilat
 
             try
             {
-                return new ASTvalue(s);
+                return new ASTvalue(s, callDefined);
             }
             catch (Exception e)
             {
@@ -146,6 +132,10 @@ namespace Compilat
                                               ASTTree.variables[newAdress].getValueType);
                 }
                 throw new Exception(e.Message);
+            }
+            finally
+            {
+                callDefined = false;
             }
         }
 
@@ -296,7 +286,7 @@ namespace Compilat
                     IOperation rightOperation = ParseFrom(right);
                     if (left.Length > 0 && ("+-*/").IndexOf(left[left.Length - 1]) >= 0)
                     {
-
+                        MonoOperation.callDefined = false;
                         IOperation leftMinusOne = MonoOperation.ParseFrom(left.Remove(left.Length - 1));
                         switch (left[left.Length - 1])
                         {
@@ -312,7 +302,7 @@ namespace Compilat
                                 break;
                         }
                     }
-
+                    MonoOperation.callDefined = true;
                     IOperation leftOperation = MonoOperation.ParseFrom(left);
 
                     if ((rightOperation as StructureDefine) == null)
@@ -324,7 +314,7 @@ namespace Compilat
                         return needUPdatedAssum;
                     }
                 }
-
+                MonoOperation.callDefined = false;
                 if (onLevel(s, "==", 0))
                 {
                     MISC.separate(s, "==", ref left, ref right, lastIndex);

@@ -1,0 +1,14 @@
+
+int main(){
+
+	int S = 0;
+	S+= 1;
+	int C = 0;
+
+	S = 2;
+
+	int X = S + C;
+	
+
+	return 0;
+}
