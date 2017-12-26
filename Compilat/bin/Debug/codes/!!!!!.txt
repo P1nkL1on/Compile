@@ -1,14 +1,24 @@
+double sin (double X, int Y);
+double cos (double X);
+double tan (double X);
+
 
 int main(){
 
 	int S = 0;
 	S+= 1;
 	int C = 0;
-
+	//double res;
+	
 	S = 2;
 
 	int X = S + C;
+	double res;
+	int CC = X + 1;
 	
-
+	if (X == 3)
+		res = cos(sin(10.0, 2));
+	else
+		res = sin(cos(20.0), 33);
 	return 0;
 }

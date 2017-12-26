@@ -87,17 +87,22 @@ namespace Compilat
 
         public override string ToLLVM(int depth)
         {
-            //
-            LLVM.AddToCode(String.Format("{0}If{1}:\n", MISC.tabsLLVM(depth), GlobalOperatorNumber));
-            string condLine = condition.getTrueEqual().ToLLVM(depth + 1);
-            LLVM.AddToCode(String.Format("{0}%cond{1} = icmp {2}\n", MISC.tabsLLVM(depth + 1), GlobalOperatorNumber, condLine));
-            LLVM.AddToCode(String.Format("{0}br i1 %cond{1}, label %Then{1}, label %Else{1}\n", MISC.tabsLLVM(depth + 1), GlobalOperatorNumber));
-            LLVM.AddToCode(String.Format("{0}Then{1}:\n", MISC.tabsLLVM(depth), GlobalOperatorNumber));
-            LLVM.AddToCode(actions[0].ToLLVM(depth + 1));
-            LLVM.AddToCode(String.Format("{0}Else{1}:\n", MISC.tabsLLVM(depth), GlobalOperatorNumber));
-            LLVM.AddToCode(actions[1].ToLLVM(depth + 1));
+            bool noElse = (actions[1].CommandCount <= 0);
+            // 
+            LLVM.AddToCode(String.Format("{0}If{1}:\n", MISC.tabsLLVM(depth - 1), GlobalOperatorNumber));
+            string condLine = condition.getTrueEqual().ToLLVM(depth);
+            LLVM.AddToCode(String.Format("{0}%cond{1} = icmp {2}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, condLine));
+            LLVM.AddToCode(String.Format("{0}br i1 %cond{1}, label %Then{1}, label %{2}{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, (noElse) ? "Ifcont" : "Else"));
+            LLVM.AddToCode(String.Format("{0}Then{1}:\n", MISC.tabsLLVM(depth - 1), GlobalOperatorNumber));
+            LLVM.AddToCode(actions[0].ToLLVM(depth));
+            if (!noElse)
+            {
+                LLVM.AddToCode(String.Format("{0}br label %Ifcont{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber));
+                LLVM.AddToCode(String.Format("{0}Else{1}:\n", MISC.tabsLLVM(depth - 1), GlobalOperatorNumber));
+                LLVM.AddToCode(actions[1].ToLLVM(depth));
+            }
+            LLVM.AddToCode(String.Format("{0}Ifcont{1}:", MISC.tabsLLVM(depth - 1), GlobalOperatorNumber));
             return "";
-
         }
     }
 

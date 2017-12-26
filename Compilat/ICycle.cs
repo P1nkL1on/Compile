@@ -8,7 +8,8 @@ namespace Compilat
 {
     public abstract class ICycle : ICommand
     {
-        protected IOperation condition;   // if (...){}
+        protected int GlobalOperatorNumber;
+        public Equal condition;   // if (...){}
         protected CommandOrder actions;  // if (){...}
 
         public virtual void Trace(int depth)
@@ -27,6 +28,7 @@ namespace Compilat
         {
             condition = new Equal(BinaryOperation.ParseFrom(parseCondition), new ASTvalue(new ValueType(VT.Cboolean), (object)true));
             this.actions = actions;
+            GlobalOperatorNumber = ++MISC.GlobalOperatorNumber;
         }
         public override void Trace(int depth)
         {
@@ -47,6 +49,7 @@ namespace Compilat
             condition = new Equal(BinaryOperation.ParseFrom(parseCondition), new ASTvalue(new ValueType(VT.Cboolean), (object)true));
             this.actions = actions;
             this.doFirst = doFirst;
+            GlobalOperatorNumber = ++MISC.GlobalOperatorNumber;
         }
 
         public CycleWhile(string parseCondition, string parseActions, bool doFirst)
@@ -56,6 +59,7 @@ namespace Compilat
             actions = new CommandOrder(parseActions, ';');
             MISC.GoBack();
             this.doFirst = doFirst;
+            GlobalOperatorNumber = ++MISC.GlobalOperatorNumber;
         }
 
         public override void Trace(int depth)

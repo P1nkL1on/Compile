@@ -121,10 +121,13 @@ namespace Compilat
 
             try
             {
-                return new ASTvalue(s, callDefined);
+                ASTvalue res = new ASTvalue(s, callDefined);
+                callDefined = false;
+                return res;
             }
             catch (Exception e)
             {
+                callDefined = false;
                 if (e.Message.IndexOf("GetAddr") == 0)
                 {
                     int newAdress = int.Parse(e.Message.Split('_')[1]);
@@ -133,10 +136,10 @@ namespace Compilat
                 }
                 throw new Exception(e.Message);
             }
-            finally
-            {
-                callDefined = false;
-            }
+            //finally
+            //{
+            //    calldefined = false;
+            //}
         }
 
         public virtual ValueType returnTypes()

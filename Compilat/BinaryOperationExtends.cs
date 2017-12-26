@@ -19,7 +19,7 @@ namespace Compilat
             requiredUpdate = "none";
             //
             int foundNumber = -1;
-            for (int i = 0; i < ASTTree.variables.Count; i++)
+            for (int i = ASTTree.variables.Count - 1; i >= 0 ; i--)
             {
                 if ((a as Define) != null && ASTTree.variables[i].name == (a as Define).varName)
                 {

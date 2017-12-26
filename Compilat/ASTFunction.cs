@@ -15,6 +15,7 @@ namespace Compilat
         CommandOrder actions;
         //
         public TypeConvertion tpcv;
+        public bool declareOnly;
         //
         static Define GetDefineFromString (string s)
         {
@@ -30,6 +31,7 @@ namespace Compilat
         }
         public ASTFunction(string S)
         {
+            declareOnly = false;
             //TypeConvertion tpcv = new TypeConvertion("IIBDDBDIBIDBCCB", 2);
             string s = S.Substring(0, S.IndexOf('('));
             List<ValueType> vtList = new List<ValueType>();
@@ -93,7 +95,10 @@ namespace Compilat
                     }
                 }
                 else
+                {
                     actions = new CommandOrder();
+                    declareOnly = true;
+                }
                 MISC.GoBack();
 
                 return;
@@ -128,10 +133,14 @@ namespace Compilat
         {
             string param = "";
             for (int i = 0; i < input.Count; i++)
-                param += input[i].returnTypes().ToLLVM() + " %" + input[i].varName + ((i < input.Count - 1) ? ", " : "");
-            LLVM.AddToCode(String.Format("{0}define {1} @{2}({3})", MISC.tabsLLVM(depth), retType.ToLLVM(), getName, param) + "{\n" + MISC.tabsLLVM(depth) + "entry:\n");//  + code + "}";
-            LLVM.AddToCode(actions.ToLLVM(depth + 1));
-            return MISC.tabsLLVM(depth) + "}";
+                param += input[i].returnTypes().ToLLVM() + ((!declareOnly) ? " %" + input[i].varName : "") + ((i < input.Count - 1) ? ", " : "");
+            if (!declareOnly)
+            {
+                LLVM.AddToCode(String.Format("{0}define {1} @{2}({3})", MISC.tabsLLVM(depth), retType.ToLLVM(), getName, param) + "{\n" + MISC.tabsLLVM(depth) + "entry:\n");//  + code + "}";
+                LLVM.AddToCode(actions.ToLLVM(depth + 1));
+                return MISC.tabsLLVM(depth) + "}";
+            }
+            return String.Format("{0}declare {1} @{2}({3})", MISC.tabsLLVM(depth), retType.ToLLVM(), getName, param);
         }
         //
         public string getName

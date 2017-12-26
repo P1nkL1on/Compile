@@ -22,7 +22,7 @@ namespace Compilat
             MISC.ConsoleWriteLine("\nLLVM\n\n", ConsoleColor.Magenta);
             ToLLVM();
             string types = "i1_i32_i64_i16_f32_f64",
-                   opers = "add_mul_sub_sdiv_fdiv_fadd_fmul_fsub_br_eq_ne_sgt_sge_slt_sle_or_and_icmp_";
+                   opers = "add_mul_sub_sdiv_fdiv_fadd_fmul_fsub_br_eq_ne_sgt_sge_slt_sle_or_and_icmp_define_declare";
             string code = LLVM.CurrentCode;
             for (int i = 0; i < code.Length; i++)
             {
@@ -60,7 +60,6 @@ namespace Compilat
         }
         public void Trace()
         {
-
             if (funcs.Count <= 0)
                 return;
 
@@ -72,6 +71,8 @@ namespace Compilat
             Console.WriteLine("\nVariables");
             for (int i = 0; i < variables.Count; i++)
                 variables[i].TraceMore(0);
+
+            TraceLLVM(); return;
 
             Console.WriteLine("\nFunctions:");
             for (int i = 0; i < funcs.Count; i++)
