@@ -26,24 +26,38 @@ namespace Compilat
             string code = LLVM.CurrentCode;
             for (int i = 0; i < code.Length; i++)
             {
-                if ((" {}(),").IndexOf(code[i]) >= 0)
+                if (code[i] == ';')
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                if (Console.ForegroundColor != ConsoleColor.Cyan)
                 {
-                    Console.ForegroundColor = ConsoleColor.Gray;
+                    if ((" {}(),").IndexOf(code[i]) >= 0)
+                        Console.ForegroundColor = ConsoleColor.Gray;
                     if (code.Substring(i).IndexOf(':') < code.Substring(i).IndexOf('\n') && code.Substring(i).IndexOf(':') > 0)
-                        Console.ForegroundColor = ConsoleColor.Magenta; 
+                        Console.ForegroundColor = ConsoleColor.Magenta;
+                    if (code[i] == '%')
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        if (code.Length > i - 6 && code.Substring(i - 6).IndexOf("label") == 0)
+                            Console.ForegroundColor = ConsoleColor.Magenta;
+                    }
+                    if (code[i] == '@') Console.ForegroundColor = ConsoleColor.Red;
+
+
+                    string nowword = (code.Substring(i).IndexOf(" ") < 0) ? "" : code.Substring(i).Remove(code.Substring(i).IndexOf(" "));
+                    if (nowword.Length > 1)
+                    {
+                        if (types.IndexOf(nowword) >= 0)
+                            Console.ForegroundColor = ConsoleColor.DarkGreen;
+                        if (opers.IndexOf(nowword) >= 0)
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                    }
                 }
-                if (code[i] == '%') Console.ForegroundColor = ConsoleColor.Green;
-                if (code[i] == '@') Console.ForegroundColor = ConsoleColor.Red;
-                
-                string nowword = (code.Substring(i).IndexOf(" ")< 0)? "" : code.Substring(i).Remove(code.Substring(i).IndexOf(" "));
-                if (nowword.Length > 1)
+                else
                 {
-                    if (types.IndexOf(nowword) >= 0)
-                        Console.ForegroundColor = ConsoleColor.DarkGreen;
-                    if (opers.IndexOf(nowword) >= 0)
-                        Console.ForegroundColor = ConsoleColor.Yellow;
+                    if (code[i] == '\n')
+                        Console.ForegroundColor = ConsoleColor.Gray;
                 }
-                
+
                 Console.Write(code[i]);
             }
         }

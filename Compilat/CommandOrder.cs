@@ -334,7 +334,7 @@ namespace Compilat
             string res = "";
             for (int i = 0; i < commands.Count; i++)
             {
-                string add = String.Format("{0}\n", commands[i].ToLLVM(depth));
+                string add = String.Format("{0}{1}", commands[i].ToLLVM(depth),"\n");
                 if (!(commands[i] as Summ != null || commands[i] as Diff != null || commands[i] as Qout != null || commands[i] as Mult != null))
                     LLVM.AddToCode(add);
             }

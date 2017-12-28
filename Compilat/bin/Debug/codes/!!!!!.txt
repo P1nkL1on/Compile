@@ -2,6 +2,9 @@ double sin (double X, int Y);
 double cos (double X);
 double tan (double X);
 
+int D (int A, int B){
+	return A + B * B - A / A;
+}
 
 int main(){
 
@@ -13,12 +16,19 @@ int main(){
 	S = 2;
 
 	int X = S + C;
-	double res;
+	double res = 1.0;
 	int CC = X + 1;
 	
-	if (X == 3)
-		res = cos(sin(10.0, 2));
-	else
-		res = sin(cos(20.0), 33);
+	//if (X == 3)
+	//	res = cos(sin(10.0, 2));
+	//else
+	//	res = sin(cos(20.0), 33);
+	
+	//res;
+	while (X > 0){
+		X-= 1;
+		res = cos(sin(res, 1));
+	}
+	
 	return 0;
 }

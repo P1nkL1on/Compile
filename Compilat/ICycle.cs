@@ -78,5 +78,21 @@ namespace Compilat
                 condition.Trace(depth + 1);
             }
         }
+        public override string ToLLVM(int depth)
+        {
+            // 
+            LLVM.AddToCode(";While\n");
+            LLVM.AddToCode(String.Format("{0}br label %Whilecond{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber));
+            LLVM.AddToCode(String.Format("{0}Whilecond{1}:\n", MISC.tabsLLVM(depth - 1), GlobalOperatorNumber));
+            string condLine = condition.getTrueEqual().ToLLVM(depth);
+            LLVM.AddToCode(String.Format("{0}%cond{1} = icmp {2}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, condLine));
+            LLVM.AddToCode(String.Format("{0}br i1 %cond{1}, label %Whileaction{1}, label %Whilecont{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber));
+
+            LLVM.AddToCode(String.Format("{0}Whileaction{1}:\n", MISC.tabsLLVM(depth - 1), GlobalOperatorNumber));
+            LLVM.AddToCode(actions.ToLLVM(depth));
+            LLVM.AddToCode(String.Format("{0}br label %Whilecond{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber));
+            LLVM.AddToCode(String.Format("{0}Whilecont{1}:", MISC.tabsLLVM(depth - 1), GlobalOperatorNumber));
+            return "";
+        }
     }
 }
