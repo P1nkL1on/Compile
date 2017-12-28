@@ -1,3 +1,4 @@
+/*
 double sin (double X, int Y);
 double cos (double X);
 double tan (double X);
@@ -5,9 +6,11 @@ double tan (double X);
 int D (int A, int B){
 	return A + B * B - A / A;
 }
-
+*/
 int main(){
-
+	double a[,,];
+	a[0,0,0] = 10.0;
+	/*
 	int S = 0;
 	S+= 1;
 	int C = 0;
@@ -25,10 +28,15 @@ int main(){
 	//	res = sin(cos(20.0), 33);
 	
 	//res;
-	while (X > 0){
+	//if (X < 0)
+	for (int i = 0; i < 100; i+= 1) {
 		X-= 1;
 		res = cos(sin(res, 1));
-	}
+		bool BO = (X > 0);
+	};
+	while (1 != 0){
+		double TAN = tan(20.0);
+	}*/
 	
 	return 0;
 }

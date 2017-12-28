@@ -39,6 +39,10 @@ namespace Compilat
 
             MISC.finish = true; actions.Trace(depth + 1);
         }
+        public override string ToLLVM(int depth)
+        {
+            return CycleWhile.ToLLVMVariative(depth, GlobalOperatorNumber, "For", false, condition, actions);
+        }
     }
     public class CycleWhile : ICycle
     {
@@ -80,18 +84,40 @@ namespace Compilat
         }
         public override string ToLLVM(int depth)
         {
+            
+            return ToLLVMVariative(depth, GlobalOperatorNumber, "While", doFirst, condition, actions);
+        }
+        public static string ToLLVMVariative(int depth, int GlobalOperatorNumber, string type,  bool doBeforeWhile, Equal condition, CommandOrder actions )
+        {
+            LLVM.AddToCode(";" + type + "\n");
             // 
-            LLVM.AddToCode(";While\n");
-            LLVM.AddToCode(String.Format("{0}br label %Whilecond{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber));
-            LLVM.AddToCode(String.Format("{0}Whilecond{1}:\n", MISC.tabsLLVM(depth - 1), GlobalOperatorNumber));
-            string condLine = condition.getTrueEqual().ToLLVM(depth);
-            LLVM.AddToCode(String.Format("{0}%cond{1} = icmp {2}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, condLine));
-            LLVM.AddToCode(String.Format("{0}br i1 %cond{1}, label %Whileaction{1}, label %Whilecont{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber));
+            if (!doBeforeWhile)
+            {
+                LLVM.AddToCode(String.Format("{0}br label %{2}cond{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, type));
+                LLVM.AddToCode(String.Format("{0}{2}cond{1}:\n", MISC.tabsLLVM(depth - 1), GlobalOperatorNumber, type));
+                string condLine = condition.getTrueEqual().ToLLVM(depth);
+                LLVM.AddToCode(String.Format("{0}%cond{1} = icmp {2}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, condLine));
+                LLVM.AddToCode(String.Format("{0}br i1 %cond{1}, label %{2}action{1}, label %{2}cont{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, type));
 
-            LLVM.AddToCode(String.Format("{0}Whileaction{1}:\n", MISC.tabsLLVM(depth - 1), GlobalOperatorNumber));
-            LLVM.AddToCode(actions.ToLLVM(depth));
-            LLVM.AddToCode(String.Format("{0}br label %Whilecond{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber));
-            LLVM.AddToCode(String.Format("{0}Whilecont{1}:", MISC.tabsLLVM(depth - 1), GlobalOperatorNumber));
+                LLVM.AddToCode(String.Format("{0}{2}action{1}:\n", MISC.tabsLLVM(depth - 1), GlobalOperatorNumber, type));
+                LLVM.AddToCode(actions.ToLLVM(depth));
+                LLVM.AddToCode(String.Format("{0}br label %{2}cond{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, type));
+                LLVM.AddToCode(String.Format("{0}{2}cont{1}:", MISC.tabsLLVM(depth - 1), GlobalOperatorNumber, type));
+            }
+            else
+            {
+                LLVM.AddToCode(String.Format("{0}{2}action{1}:\n", MISC.tabsLLVM(depth - 1), GlobalOperatorNumber, type));
+                LLVM.AddToCode(actions.ToLLVM(depth));
+
+                LLVM.AddToCode(String.Format("{0}br label %{2}cond{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, type));
+                LLVM.AddToCode(String.Format("{0}{2}cond{1}:\n", MISC.tabsLLVM(depth - 1), GlobalOperatorNumber, type));
+                string condLine = condition.getTrueEqual().ToLLVM(depth);
+                LLVM.AddToCode(String.Format("{0}%cond{1} = icmp {2}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, condLine));
+                LLVM.AddToCode(String.Format("{0}br i1 %cond{1}, label %{2}action{1}, label %{2}cont{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, type));
+
+                LLVM.AddToCode(String.Format("{0}br label %{2}cond{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, type));
+                LLVM.AddToCode(String.Format("{0}{2}cont{1}:", MISC.tabsLLVM(depth - 1), GlobalOperatorNumber, type));
+            }
             return "";
         }
     }

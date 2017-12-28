@@ -211,10 +211,14 @@ namespace Compilat
                     return -1;
                 return variableNumber;
             }
+            if (a.returnTypes().pointerLevel == 1)
+                return -2;
             return -1;
         }
         public override string ToLLVM(int depth)
         {
+            if (variable == null)
+                return "?ARRAY ELEMENT?";
             return variable.ToLLVM();
         }
         public override void Trace(int depth)

@@ -145,7 +145,11 @@ namespace Compilat
         public ValueType returnTypes() { return valType; }
 
         public int getPointerLevel { get { return 0; } }
-        
+
+        public override string ToString()
+        {
+            return valType.ToString();
+        }
     }
 
     public enum VAT
@@ -258,6 +262,11 @@ namespace Compilat
                 res += "*";
             }
             return res;
+        }
+
+        public override string ToString()
+        {
+            return valType.ToString() + " " + name;
         }
     }
 }

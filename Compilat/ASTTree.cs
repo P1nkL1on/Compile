@@ -10,6 +10,7 @@ namespace Compilat
     {
         public static List<ASTFunction> funcs = new List<ASTFunction>();
         string original;
+        string path;
         public static List<IASTtoken> tokens = new List<IASTtoken>();
         public static List<ASTvariable> variables = new List<ASTvariable>();
         public static CommandOrder GlobalVars = new CommandOrder();
@@ -19,8 +20,9 @@ namespace Compilat
 
         public void TraceLLVM()
         {
+
             MISC.ConsoleWriteLine("\nLLVM\n\n", ConsoleColor.Magenta);
-            ToLLVM();
+            ToLLVM(true);
             string types = "i1_i32_i64_i16_f32_f64",
                    opers = "add_mul_sub_sdiv_fdiv_fadd_fmul_fsub_br_eq_ne_sgt_sge_slt_sle_or_and_icmp_define_declare";
             string code = LLVM.CurrentCode;
@@ -38,7 +40,7 @@ namespace Compilat
                     {
                         Console.ForegroundColor = ConsoleColor.Green;
                         if (code.Length > i - 6 && code.Substring(i - 6).IndexOf("label") == 0)
-                            Console.ForegroundColor = ConsoleColor.Magenta;
+                            Console.ForegroundColor = ConsoleColor.DarkMagenta;
                     }
                     if (code[i] == '@') Console.ForegroundColor = ConsoleColor.Red;
 
@@ -57,11 +59,11 @@ namespace Compilat
                     if (code[i] == '\n')
                         Console.ForegroundColor = ConsoleColor.Gray;
                 }
-
+                if (!(code[i] == '\n' && i > 0 && code[i-1] == '\n'))
                 Console.Write(code[i]);
             }
         }
-        public String ToLLVM()
+        public String ToLLVM(bool writeToFile)
         {
             LLVM.CurrentCode = "";
             for (int i = 0; i < funcs.Count; i++)
@@ -70,24 +72,34 @@ namespace Compilat
                     LLVM.AddToCode(funcs[i].ToLLVM(0) + "\n\n");
                     LLVM.AddToCode("\n");
                 }
+            string pathLLVM = path.Remove(path.LastIndexOf('.')) + "LLVM.ll";
+            System.IO.File.WriteAllText(pathLLVM, LLVM.CurrentCode);
+
             return LLVM.CurrentCode;
         }
         public void Trace()
         {
             if (funcs.Count <= 0)
                 return;
-
+            Console.Clear();
             clr = ConsoleColor.Black;
-            //Console.WriteLine("\nTokens:");
-            //for (int i = 0; i < tokens.Count; i++)
-            //    tokens[i].TraceMore(0);
 
-            Console.WriteLine("\nVariables");
-            for (int i = 0; i < variables.Count; i++)
-                variables[i].TraceMore(0);
+            Console.WriteLine(String.Format("Path:\n\t{0}\nCode:\n\n{1}", path, original));
 
             TraceLLVM(); return;
 
+            Console.WriteLine("\nTokens:");
+            for (int i = 0; i < tokens.Count; i++)
+                tokens[i].TraceMore(0);
+            Console.WriteLine("\n\nVariables");
+            for (int i = 0; i < variables.Count; i++)
+                variables[i].TraceMore(0);
+            if (GlobalVars.CommandCount > 0)
+            {
+                Console.Write(MISC.tabs(0));
+                MISC.ConsoleWriteLine("Global vars:", ConsoleColor.Black, ConsoleColor.Cyan);
+                GlobalVars.Trace(1);
+            }
             Console.WriteLine("\nFunctions:");
             for (int i = 0; i < funcs.Count; i++)
             {
@@ -96,14 +108,7 @@ namespace Compilat
                 else
                     MISC.ConsoleWriteLine(String.Format("  {0}:", "null"), ConsoleColor.DarkGreen);
             }
-
             Console.WriteLine();
-            if (GlobalVars.CommandCount > 0)
-            {
-                Console.Write(MISC.tabs(0));
-                MISC.ConsoleWriteLine("Global vars:", ConsoleColor.Black, ConsoleColor.Cyan);
-                GlobalVars.Trace(1);
-            }
             for (int i = 0; i < funcs.Count; i++)
                 if (funcs[i] != null)
                 {
@@ -111,8 +116,9 @@ namespace Compilat
                     funcs[i].Trace(0);
                 }
             //
-            TraceLLVM();
+            //TraceLLVM();
         }
+
         static List<char> brStack = new List<char>();
         void ClearTree()
         {
@@ -125,8 +131,9 @@ namespace Compilat
             MISC.LLVMtmpNumber = 0;
         }
 
-        public ASTTree(string s)
+        public ASTTree(string s, string path)
         {
+            this.path = path;
             string sTrim = "";
             ClearTree();
 

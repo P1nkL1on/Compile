@@ -32,6 +32,8 @@ namespace Compilat
                     break;
                 }
             }
+            if (foundNumber == -2) // it is a pointer typed
+                return;
             if (foundNumber < 0)
                 throw new Exception("Assumming not a variable!");
             else
@@ -75,19 +77,9 @@ namespace Compilat
         }
         public override string ToLLVM(int depth)
         {
-            return LLVM.BinaryToLLVM(depth, "eq", a, b, a.returnTypes());
+            return LLVM.BinaryEqualToLLVM(depth, "eq", a, b, a.returnTypes());
         }
-        //IOperation goDeeper(IOperation fromOperation)
-        //{
-        //    if ((fromOperation as Equal) != null)
-        //    {
-        //        if (a as ASTvalue != null && (a as ASTvalue).getValueType == new ValueType(VT.Cboolean) && (bool)((a as ASTvalue).getValue) == true)
-        //            return goDeeper(b); 
-        //        if (b as ASTvalue != null && (b as ASTvalue).getValueType == new ValueType(VT.Cboolean) && (bool)((b as ASTvalue).getValue) == true)
-        //            return goDeeper(a);
-        //    }
-        //    return fromOperation;
-        //}
+
         public IOperation getTrueEqual()
         {
             if (b as ASTvalue != null && (b as ASTvalue).getValueType == new ValueType(VT.Cboolean) && (bool)((b as ASTvalue).getValue) == true)
@@ -105,10 +97,11 @@ namespace Compilat
             IOperation[] children = new IOperation[2] { left, right };
             returnType = TypeConverter.TryConvertEqual(ref children);
             a = children[0]; b = children[1];
+            returnType = new ValueType(VT.Cboolean);
         }
         public override string ToLLVM(int depth)
         {
-            return LLVM.BinaryToLLVM(depth, "ne", a, b, a.returnTypes());
+            return LLVM.BinaryEqualToLLVM(depth, "ne", a, b, a.returnTypes());
         }
     }
 

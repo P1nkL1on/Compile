@@ -19,8 +19,8 @@ namespace Compilat
         //
         static Define GetDefineFromString (string s)
         {
-            int varType = Math.Max((s.IndexOf("int") >= 0) ? 2 : -1, Math.Max((s.IndexOf("double") >= 0) ? 5 : -1, Math.Max((s.IndexOf("char") >= 0) ? 3 : -1,
-                Math.Max((s.IndexOf("string") >= 0) ? 5 : -1, (s.IndexOf("bool") >= 0) ? 3 : -1))));
+            int varType = Math.Max((s.IndexOf("int") == 0) ? 2 : -1, Math.Max((s.IndexOf("double") == 0) ? 5 : -1, Math.Max((s.IndexOf("char") == 0) ? 3 : -1,
+                Math.Max((s.IndexOf("string") == 0) ? 5 : -1, (s.IndexOf("bool") == 0) ? 3 : -1))));
 
             if (varType >= 0)
             {
@@ -37,8 +37,8 @@ namespace Compilat
             List<ValueType> vtList = new List<ValueType>();
 
 
-            int varType = Math.Max((s.IndexOf("int") >= 0) ? 2 : -1, Math.Max((s.IndexOf("double") >= 0) ? 5 : -1, Math.Max((s.IndexOf("char") >= 0) ? 3 : -1,
-                Math.Max((s.IndexOf("string") >= 0) ? 5 : -1, Math.Max((s.IndexOf("bool") >= 0) ? 3 : -1, (s.IndexOf("void") >= 0) ? 3 : -1)))));
+            int varType = Math.Max((s.IndexOf("int") == 0) ? 2 : -1, Math.Max((s.IndexOf("double") == 0) ? 5 : -1, Math.Max((s.IndexOf("char") == 0) ? 3 : -1,
+                Math.Max((s.IndexOf("string") == 0) ? 5 : -1, Math.Max((s.IndexOf("bool") == 0) ? 3 : -1, (s.IndexOf("void") == 0) ? 3 : -1)))));
             if (varType >= 0)
             {
                 varType++;

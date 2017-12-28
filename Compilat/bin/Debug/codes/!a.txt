@@ -18,7 +18,7 @@ void func1(int v1, int v2)
 
 int main2(int* arg, string* argc, double d1, double d2, string S, string SS)
 {
-    bool flag;
+    bool flag = true;
     func1(1,1);
     int x,y,z,x1,x2,x3,x4;
     if (flag && 1)

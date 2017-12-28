@@ -65,6 +65,9 @@ namespace Compilat
                         command = codeNames[currentCodeName];
                         Console.Clear();
                         break;
+                    case ConsoleKey.E:
+                        System.Diagnostics.Process.Start(@"" + codeFolder + "\\" + codeNames[currentCodeName] + ".txt");
+                        break;
                     default:
                         break;
                 }
@@ -91,20 +94,9 @@ namespace Compilat
 
         ASTTree ReadFileToTree(string codeFolder, string command)
         {
-            //while (true)
-            //{
-            //    Console.WriteLine("a");
-            //    Thread.Sleep(1000);
-            //}
-
             string code = "";
             string[] lines = System.IO.File.ReadAllLines(@"" + codeFolder + "/" + command + ".txt");
-            //linesOut = lines;
-            //
-            //string filename = "";
-            //Thread thread = new Thread(() => ReadFile(codeFolder, command));
-            //thread.Start();
-            //
+
             foreach (string line in lines)
             {
                 // if an included module
@@ -140,7 +132,7 @@ namespace Compilat
                 }
             }
 
-            ASTTree t = new ASTTree(code);
+            ASTTree t = new ASTTree(code, @"" + codeFolder + "/" + command + ".txt");
             return t;
         }
 
@@ -157,7 +149,7 @@ namespace Compilat
 
                         bool changed = CatFileAndDetectChanges(codeFolder, command, ref fileContent);
                         ReadFileToTree(codeFolder, command).Trace();
-                        Console.Write("\nWaiting changes...");
+                        Console.Write("\nWaiting changes...\n");
 
                         while (true)
                         {
@@ -166,9 +158,10 @@ namespace Compilat
                             changed = CatFileAndDetectChanges(codeFolder, command, ref fileContent);
                             if (changed)
                             {
-                                Console.WriteLine("Changes in file detected. Reloading...");
                                 Console.Clear();
-                                ReadFileToTree(codeFolder, command).Trace(); Console.Write("\nWaiting changes...");
+                                Console.WriteLine("Changes in file detected. Reloading...");
+                                Thread.Sleep(500);
+                                ReadFileToTree(codeFolder, command).Trace(); Console.Write("\nWaiting changes...\n");
                             }
                         }
                     });

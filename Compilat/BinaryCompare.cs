@@ -19,7 +19,7 @@ namespace Compilat
         }
         public override string ToLLVM(int depth)
         {
-            return LLVM.BinaryToLLVM(depth, "sle", a, b, returnType);
+            return LLVM.BinaryEqualToLLVM(depth, "sle", a, b, returnType);
         }
     }
     class Less : BinaryOperation
@@ -35,7 +35,7 @@ namespace Compilat
         }
         public override string ToLLVM(int depth)
         {
-            return LLVM.BinaryToLLVM(depth, "slt", a, b, returnType);
+            return LLVM.BinaryEqualToLLVM(depth, "slt", a, b, returnType);
         }
     }
     class MrEq : BinaryOperation
@@ -51,7 +51,7 @@ namespace Compilat
         }
         public override string ToLLVM(int depth)
         {
-            return LLVM.BinaryToLLVM(depth, "sge", a, b, returnType);
+            return LLVM.BinaryEqualToLLVM(depth, "sge", a, b, returnType);
         }
     }
     class More : BinaryOperation
@@ -67,7 +67,7 @@ namespace Compilat
         }
         public override string ToLLVM(int depth)
         {
-            return LLVM.BinaryToLLVM(depth, "sgt", a, b, returnType);
+            return LLVM.BinaryEqualToLLVM(depth, "sgt", a, b, returnType);
         }
     }
 }

@@ -28,6 +28,12 @@ namespace Compilat
             return "%tmp" + (MISC.LLVMtmpNumber++);
         }
 
+        public static string BinaryEqualToLLVM(int depth, string keyword, IOperation a, IOperation b, ValueType returnType)
+        {
+            string kids = String.Format("{0}, {1}\n", a.ToLLVM(depth), b.ToLLVM(depth));
+            return String.Format("{3} {1} {2}", MISC.LLVMtmpNumber, a.returnTypes().ToLLVM(), kids, keyword);
+        }
+
         public static void AddToCode(string what)
         {
             string A = what;

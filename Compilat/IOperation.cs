@@ -60,15 +60,15 @@ namespace Compilat
 
             if (s.IndexOf("&") == 0)
             {
+                callDefined = true; ///!
                 IOperation gettingAdressOf = ParseFrom(s.Substring(1, s.Length - 1));
-
                 return new Adrs(gettingAdressOf);
             }
 
             
 
-            int varType = Math.Max((s.IndexOf("int") >= 0) ? 2 : -1, Math.Max((s.IndexOf("double") >= 0) ? 5 : -1, Math.Max((s.IndexOf("char") >= 0) ? 3 : -1,
-                Math.Max((s.IndexOf("string") >= 0) ? 5 : -1, (s.IndexOf("bool") >= 0) ? 3 : -1))));
+            int varType = Math.Max((s.IndexOf("int")== 0) ? 2 : -1, Math.Max((s.IndexOf("double") == 0) ? 5 : -1, Math.Max((s.IndexOf("char") == 0) ? 3 : -1,
+                Math.Max((s.IndexOf("string") == 0) ? 5 : -1, (s.IndexOf("bool") == 0) ? 3 : -1))));
 
             if (varType >= 0)
             {
@@ -100,7 +100,7 @@ namespace Compilat
                 //        BinaryOperation.ParseFrom(MISC.getIn(s, s.IndexOf('[')))),
                 //        (pointTo).returnTypes());
                 //throw new Exception("Invalid pointer selected!");
-
+                callDefined = true; ///!
 
                 string sContainBrackets = s.Substring(s.IndexOf("["));
                 List<string> getedBrs = MISC.splitByQuad(sContainBrackets);
@@ -261,8 +261,8 @@ namespace Compilat
                 { return new Ret(ParseFrom(s.Substring(6))); }
 
                 //___________
-                int varType = Math.Max((s.IndexOf("int") >= 0) ? 2 : -1, Math.Max((s.IndexOf("double") >= 0) ? 5 : -1, Math.Max((s.IndexOf("char") >= 0) ? 3 : -1,
-                Math.Max((s.IndexOf("string") >= 0) ? 5 : -1, (s.IndexOf("bool") >= 0) ? 3 : -1))));
+                int varType = Math.Max((s.IndexOf("int") == 0) ? 2 : -1, Math.Max((s.IndexOf("double") == 0) ? 5 : -1, Math.Max((s.IndexOf("char") == 0) ? 3 : -1,
+                Math.Max((s.IndexOf("string") == 0) ? 5 : -1, (s.IndexOf("bool") == 0) ? 3 : -1))));
                 if (varType > 0 && MISC.IndexOfOnLevel0(s, ",", 0) > 0)
                 {
                     s = s.Insert(varType + 1, "$");

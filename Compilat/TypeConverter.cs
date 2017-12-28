@@ -125,7 +125,7 @@ namespace Compilat
             if (args[0].returnTypes() == args[1].returnTypes())
                 return args[0].returnTypes();
 
-            return TryConvert(new TypeConvertion("BBBIIBDDBCCBSSB", 2),ref args);
+            return TryConvert(new TypeConvertion("BBBIIBDDBCCBSSB", 2), ref args);
         }
 
         public static ValueType TryConvertSumm(TypeConvertion needType, ref IOperation[] args)
@@ -143,12 +143,12 @@ namespace Compilat
                     // int + ***X == ***X; but we should conver this fucker to INT
                     if (args[0].returnTypes().rootType == VT.Cint || args[0].returnTypes().rootType == VT.Cchar || args[0].returnTypes().rootType == VT.Cboolean)
                     {
-                        
-                        args[0] = applyConvert(args[0], new ValueType(VT.Cint));
-                        if (i == 1) 
-                            args = new IOperation[]{args[1], args[0]};
+                        if (args[0].returnTypes().rootType != VT.Cint)
+                            args[0] = applyConvert(args[0], new ValueType(VT.Cint));
+                        if (i == 1)
+                            args = new IOperation[] { args[1], args[0] };
 
-                        return args[(i == 0)? 1 : 0].returnTypes();
+                        return args[(i == 0) ? 1 : 0].returnTypes();
                     }
 
                 if (i == 0)
