@@ -17,6 +17,9 @@ namespace Compilat
         public TypeConvertion tpcv;
         public bool declareOnly;
         //
+        public int infiniteParamsAfter;
+        //
+        public int ParamCount { get { return input.Count; } }
         static Define GetDefineFromString (string s)
         {
             int varType = Math.Max((s.IndexOf("int") == 0) ? 2 : -1, Math.Max((s.IndexOf("double") == 0) ? 5 : -1, Math.Max((s.IndexOf("char") == 0) ? 3 : -1,
@@ -31,11 +34,11 @@ namespace Compilat
         }
         public ASTFunction(string S)
         {
+            infiniteParamsAfter = -1;
             declareOnly = false;
             //TypeConvertion tpcv = new TypeConvertion("IIBDDBDIBIDBCCB", 2);
             string s = S.Substring(0, S.IndexOf('('));
             List<ValueType> vtList = new List<ValueType>();
-
 
             int varType = Math.Max((s.IndexOf("int") == 0) ? 2 : -1, Math.Max((s.IndexOf("double") == 0) ? 5 : -1, Math.Max((s.IndexOf("char") == 0) ? 3 : -1,
                 Math.Max((s.IndexOf("string") == 0) ? 5 : -1, Math.Max((s.IndexOf("bool") == 0) ? 3 : -1, (s.IndexOf("void") == 0) ? 3 : -1)))));
@@ -61,10 +64,15 @@ namespace Compilat
 
                 for (int i = 0; i < vars.Count; i++)
                 {
-                    //input.Add((Define)MonoOperation.ParseFrom(vars[i]));
-                    input.Add(GetDefineFromString(vars[i]));
-                    vtList.Add((input[input.Count - 1] as Define).returnTypes());
-                    //tpcvString += vars[i][0].ToString().ToUpper();
+                    if (vars[i] != "...")
+                    {
+                        if (infiniteParamsAfter >= 0)
+                            throw new Exception("Can not defined more arguments after ... !");
+                        input.Add(GetDefineFromString(vars[i]));
+                        vtList.Add((input[input.Count - 1] as Define).returnTypes());
+                    }
+                    else
+                        infiniteParamsAfter = i;
                 }
                 //tpcvString += returnTypes().ToString()[1].ToString().ToUpper();
                 tpcv = new TypeConvertion(vtList, retType);
@@ -134,9 +142,11 @@ namespace Compilat
             string param = "";
             for (int i = 0; i < input.Count; i++)
                 param += input[i].returnTypes().ToLLVM() + ((!declareOnly) ? " %" + input[i].varName : "") + ((i < input.Count - 1) ? ", " : "");
+            if (infiniteParamsAfter >= 0)
+                param += ", ...";
             if (!declareOnly)
             {
-                LLVM.AddToCode(String.Format("{0}define {1} @{2}({3})", MISC.tabsLLVM(depth), retType.ToLLVM(), getName, param) + "{\n" + MISC.tabsLLVM(depth) + "entry:\n");//  + code + "}";
+                LLVM.AddToCode(String.Format("{0}define {1} @{2}({3})", MISC.tabsLLVM(depth), retType.ToLLVM(), getName, param) + "{\n" /*+ MISC.tabsLLVM(depth) + "entry:\n"*/);//  + code + "}";
                 LLVM.AddToCode(actions.ToLLVM(depth + 1));
                 return MISC.tabsLLVM(depth) + "}";
             }

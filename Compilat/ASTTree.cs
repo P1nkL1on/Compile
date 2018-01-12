@@ -23,8 +23,8 @@ namespace Compilat
 
             MISC.ConsoleWriteLine("\nLLVM\n\n", ConsoleColor.Magenta);
             ToLLVM(true);
-            string types = "i1_i32_i64_i16_f32_f64",
-                   opers = "add_mul_sub_sdiv_fdiv_fadd_fmul_fsub_br_eq_ne_sgt_sge_slt_sle_or_and_icmp_define_declare";
+            string types = "i1_i32_i64_i16_f32_f64_void_i8",
+                   opers = "add_mul_sub_sdiv_fdiv_fadd_fmul_fsub_br_eq_ne_sgt_sge_slt_sle_or_and_icmp_define_declare_tail_call_global_constant";
             string code = LLVM.CurrentCode;
             for (int i = 0; i < code.Length; i++)
             {
@@ -59,16 +59,18 @@ namespace Compilat
                     if (code[i] == '\n')
                         Console.ForegroundColor = ConsoleColor.Gray;
                 }
-                if (!(code[i] == '\n' && i > 0 && code[i-1] == '\n'))
-                Console.Write(code[i]);
+                if (!(code[i] == '\n' && i > 0 && code[i - 1] == '\n'))
+                    Console.Write(code[i]);
             }
         }
         public String ToLLVM(bool writeToFile)
         {
-            LLVM.CurrentCode = "";
+            if (GlobalVars.CommandCount != 0)
+                GlobalVars.TryTraceLLVMGlobalVars();
             for (int i = 0; i < funcs.Count; i++)
                 if (funcs[i] != null)
                 {
+                    MISC.LLVMtmpNumber = 0;
                     LLVM.AddToCode(funcs[i].ToLLVM(0) + "\n\n");
                     LLVM.AddToCode("\n");
                 }
@@ -86,7 +88,7 @@ namespace Compilat
 
             Console.WriteLine(String.Format("Path:\n\t{0}\nCode:\n\n{1}", path, original));
 
-            TraceLLVM(); return;
+
 
             Console.WriteLine("\nTokens:");
             for (int i = 0; i < tokens.Count; i++)
@@ -116,7 +118,7 @@ namespace Compilat
                     funcs[i].Trace(0);
                 }
             //
-            //TraceLLVM();
+            TraceLLVM(); return;
         }
 
         static List<char> brStack = new List<char>();
@@ -133,6 +135,7 @@ namespace Compilat
 
         public ASTTree(string s, string path)
         {
+            LLVM.CurrentCode = "";
             this.path = path;
             string sTrim = "";
             ClearTree();
@@ -172,11 +175,14 @@ namespace Compilat
 
         static string FuncTrimmer(string s)
         {
+            string[] deleteWords = new string[] { "const " };
             string res = "";
             int brL = 0, isStr = 0, isCmt = 0, isChar = 0;
 
             for (int i = 0; i < s.Length; i++)
             {
+                if (s.Substring(i).IndexOf(deleteWords[0]) == 0)
+                { i += deleteWords[0].Length - 1; continue; }
                 string add = s[i] + "";
                 if (isStr == 0 && isChar == 0 && isCmt == 0)
                 {
@@ -273,20 +279,23 @@ namespace Compilat
         }
         public string ToLLVM()
         {
+            string pointer = "".PadLeft(pointerLevel, '*');
             switch (rootType)
             {
                 case VT.Cint:
-                    return "i32";
+                    return "i32" + pointer;
                 case VT.Cdouble:
-                    return "f64";
+                    return "f64" + pointer;
                 case VT.Cchar:
-                    return "i8";
+                    return "i8" + pointer;
                 case VT.Cboolean:
-                    return "i1";
+                    return "i1" + pointer;
                 case VT.Cvoid:
-                    return "void";
+                    return "void" + pointer;
+                case VT.Cstring:
+                    return "i8*" + pointer;
                 default:
-                    return "???";
+                    return "???" + pointer;;
             }
         }
 

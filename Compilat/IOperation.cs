@@ -47,10 +47,17 @@ namespace Compilat
 
 
             if (s.Length > 2 && s.IndexOf("--") == s.Length - 2)
-                return new Dscr(ParseFrom(s.Substring(0, s.Length - 2)));
+            {
+                IOperation lt = ParseFrom(s.Substring(0, s.Length - 2));
+                return new Assum(lt, new Diff(lt, new ASTvalue(new ValueType(VT.Cint), (object)1)));
+                //return new Dscr());
+            }
 
-            if (s.Length > 2 && s.IndexOf("++") == s.Length - 2)
-                return new Incr(ParseFrom(s.Substring(0, s.Length - 2)));
+            if (s.Length > 2 && s.IndexOf("++") == s.Length - 2){
+                //return new Incr(ParseFrom(s.Substring(0, s.Length - 2)));
+                IOperation lt = ParseFrom(s.Substring(0, s.Length - 2));
+                return new Assum(lt, new Summ(lt, new ASTvalue(new ValueType(VT.Cint), (object)1)));
+            }
 
             if (s.IndexOf("-") == 0)
                 return new Mins(ParseFrom(s.Substring(1, s.Length - 1)));
@@ -289,7 +296,7 @@ namespace Compilat
                     IOperation rightOperation = ParseFrom(right);
                     if (left.Length > 0 && ("+-*/").IndexOf(left[left.Length - 1]) >= 0)
                     {
-                        MonoOperation.callDefined = false;
+                        MonoOperation.callDefined = false; 
                         IOperation leftMinusOne = MonoOperation.ParseFrom(left.Remove(left.Length - 1));
                         switch (left[left.Length - 1])
                         {

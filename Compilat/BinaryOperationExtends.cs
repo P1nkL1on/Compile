@@ -57,9 +57,24 @@ namespace Compilat
         }
         public override string ToLLVM(int depth)
         {
+            if (a as GetValByAdress != null)
+            {
+                (a as GetValByAdress).LLVM_isLeftOperand = true;
+                string number = b.ToLLVM(depth), add_last = a.ToLLVM(depth);
+                LLVM.AddToCode(b.returnTypes().ToLLVM() + " " +number +","+ add_last);
+                return "";
+            }
             return MISC.tabsLLVM(depth)
                 + a.ToLLVM(depth)
                 + " = "
+                + ((b as ASTvalue != null) ? b.returnTypes().ToLLVM() + " " : "")
+                + b.ToLLVM(depth);
+        }
+        public string LLVMGLOBAL(int depth)
+        {
+            return MISC.tabsLLVM(depth)
+                + a.ToLLVM(depth)
+                + " = global "
                 + ((b as ASTvalue != null) ? b.returnTypes().ToLLVM() + " " : "")
                 + b.ToLLVM(depth);
         }

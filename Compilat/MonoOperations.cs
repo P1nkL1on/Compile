@@ -9,7 +9,7 @@ namespace Compilat
     class Define : BinaryOperation
     {
         ValueType defineType;
-
+        public ASTvariable var;
         public string varName;
         public Define(string s, bool autoAssume)
         {
@@ -85,6 +85,7 @@ namespace Compilat
             //_________________________________________
 
             ASTvariable NV = new ASTvariable(defineType, varName, pointerLevel, MISC.GetCurrentVariableAdressType());
+            var = NV;
             ASTTree.variables.Add(NV);
             MISC.pushVariable(ASTTree.variables.Count - 1);
             if (autoAssume)
@@ -117,7 +118,9 @@ namespace Compilat
         }
         public override string ToLLVM(int depth)
         {
-            return "%" + varName;
+            //if (var.getPointerLevel == 0)
+            return var.ToLLVM();
+            //return "".PadLeft(var.getPointerLevel, '*') ;
         }
     }
 
@@ -151,10 +154,14 @@ namespace Compilat
         public Incr(IOperation val)
         {
             operationString = "++";
-            TypeConvertion tpcv = new TypeConvertion("IIDD", 1);
+            TypeConvertion tpcv = new TypeConvertion("II", 1);
             IOperation[] children = new IOperation[1] { val };
             returnType = TypeConverter.TryConvert(tpcv, ref children);
             a = children[0];
+        }
+        public override string ToLLVM(int depth)
+        {
+            return "++";
         }
     }
     class Dscr : MonoOperation
@@ -162,7 +169,7 @@ namespace Compilat
         public Dscr(IOperation val)
         {
             operationString = "--";
-            TypeConvertion tpcv = new TypeConvertion("IIDD", 1);
+            TypeConvertion tpcv = new TypeConvertion("II", 1);
             IOperation[] children = new IOperation[1] { val };
             returnType = TypeConverter.TryConvert(tpcv, ref children);
             a = children[0];
@@ -179,11 +186,18 @@ namespace Compilat
             a = val;
             returnType = a.returnTypes().TypeOfPointerToThis();
         }
-
+        public override string ToLLVM(int depth)
+        {
+            return LLVM.ParamToLLVM(depth, "", returnType, a);
+        }
     }
     class GetValByAdress : MonoOperation
     {
+        public bool LLVM_isLeftOperand = false;
         ASTvariable variable;
+
+        IOperation from;
+        IOperation adder;
         public GetValByAdress(IOperation adress, ValueType retType)
         {
             operationString = "get";
@@ -197,11 +211,25 @@ namespace Compilat
             }
             catch (Exception e)
             {
+                variable = null;
+                adder = (a as BinarySummatic).FindNonVariable(out from);
                 returnType = retType.TypeOfPointedByThis();
             };
-
         }
-
+        protected ASTvariable FindOriginalVariable()
+        {
+            if (variable != null)
+                return variable;
+            if (a as BinarySummatic != null)
+            {
+                ASTvariable var = (a as BinarySummatic).FindVariable();
+                GetValByAdress deeper = (a as BinarySummatic).Deep();
+                if (var == null)
+                    return deeper.FindOriginalVariable();
+                return var;
+            }
+            return null;
+        }
         public int GetAdress()
         {
             if (a as ASTvalue != null)
@@ -218,9 +246,26 @@ namespace Compilat
         public override string ToLLVM(int depth)
         {
             if (variable == null)
-                return "?ARRAY ELEMENT?";
+            {
+                MISC.LLVMtmpNumber+= 2;
+                int num = MISC.LLVMtmpNumber - 1;
+                LLVM.AddToCode(MISC.tabsLLVM(depth) + "%tmp" +(num)+" = "+ LLVM.ParamToLLVM(depth, "getelementptr", returnTypes(), from, adder));
+                if (!LLVM_isLeftOperand)
+                {
+                    LLVM.AddToCode(MISC.tabsLLVM(depth) + "%tmp" + (num + 1) + " = " + LLVM.Load(returnTypes(), from.returnTypes().ToLLVM() + " %tmp" + num) + "\n");
+                    return "%tmp" + (num + 1);
+                }
+                else
+                {
+                    LLVM_isLeftOperand = false;
+                    MISC.LLVMtmpNumber--;
+                    LLVM.AddToCode(MISC.tabsLLVM(depth) + "store ");
+                    return String.Format(" {0} tmp{1}, align {2}", from.returnTypes().ToLLVM(), num, MISC.SyzeOf(returnTypes()));
+                }
+            }
             return variable.ToLLVM();
         }
+        
         public override void Trace(int depth)
         {
             if (variable == null)
@@ -240,7 +285,6 @@ namespace Compilat
                 //MISC.finish = true;
                 variable.Trace(depth);
             }
-
         }
     }
 

@@ -6,7 +6,34 @@ using System.Threading.Tasks;
 
 namespace Compilat
 {
-    class Summ : BinaryOperation
+    class BinarySummatic : BinaryOperation
+    {
+        public GetValByAdress Deep()
+        {
+            if (a as GetValByAdress != null)
+                return (a as GetValByAdress);
+            if (b as GetValByAdress != null)
+                return (b as GetValByAdress);
+            return null;
+        }
+        public ASTvariable FindVariable (){
+            if (a as ASTvariable != null)
+                return (a as ASTvariable);
+            if (b as ASTvariable != null)
+                return (b as ASTvariable);
+            return null;
+        }
+        public IOperation FindNonVariable(out IOperation other)
+        {
+            if (a as GetValByAdress != null)
+            { other = a;  return (b); }
+            if (b as GetValByAdress != null)
+            { other = b;  return (a); }
+            other = null;
+            return null;
+        }
+    }
+    class Summ : BinarySummatic
     {
         public Summ(IOperation left, IOperation right)
         {
@@ -29,7 +56,7 @@ namespace Compilat
             return LLVM.BinaryToLLVM(depth, (returnType != VT.Cdouble)? "add" : "fadd", a, b, returnType);
         }
     }
-    class Diff : BinaryOperation
+    class Diff : BinarySummatic
     {
         public Diff(IOperation left, IOperation right)
         {

@@ -49,11 +49,12 @@ namespace Compilat
                 int haveTypes = ASTTree.funcs[i].returnTypesList().Count,
                     callTypes = callingTypes.Count;
 
-                if (nameSame && haveTypes == callTypes)
+                if (nameSame && (haveTypes == callTypes || (haveTypes <= callTypes && ASTTree.funcs[i].infiniteParamsAfter >= 0)))
                 {
-                    IOperation[] children = new IOperation[arguments.Count];
+                    int checkCount = Math.Min(arguments.Count, ASTTree.funcs[i].ParamCount);
+                    IOperation[] children = new IOperation[checkCount]; IOperation[] otherParmas = new IOperation[arguments.Count - checkCount];
                     for (int j = 0; j < arguments.Count; j++)
-                        children[j] = arguments[j];
+                        if (j < checkCount) children[j] = arguments[j]; else otherParmas[j - checkCount] = arguments[j];
                     if (callingTypes.Count != 0)
                     {
                         try
@@ -61,6 +62,7 @@ namespace Compilat
                             //ValueType returnType = MISC.CheckTypeCorrect(null, ASTTree.funcs[i].tpcv, ref children);
                             ValueType returnType = TypeConverter.TryConvert( ASTTree.funcs[i].tpcv, ref children);
                             arguments = children.ToList();
+                            arguments.AddRange(otherParmas.ToList());
                             foundAnalog = true;
                             break;
                         }
@@ -113,9 +115,18 @@ namespace Compilat
             for (int i = 0; i < arguments.Count; i++)
                 param += arguments[i].returnTypes().ToLLVM() + " " 
                     + arguments[i].ToLLVM(depth) + ((i < arguments.Count - 1) ? ", " : "");
-             LLVM.AddToCode(String.Format("{5}%tmp{4} = call {0} @{1}({2})\n", returnTypes().ToLLVM(), ASTTree.funcs[functionCallNumber].getName, 
-                 param, MISC.tabsLLVM(depth), ++MISC.LLVMtmpNumber, MISC.tabsLLVM(depth)));
-             return "%tmp" + MISC.LLVMtmpNumber;
+            if (returnTypes().rootType != VT.Cvoid)
+            {
+                LLVM.AddToCode(String.Format("{5}%tmp{4} = call {0} @{1}({2})\n", returnTypes().ToLLVM(), ASTTree.funcs[functionCallNumber].getName,
+                    param, MISC.tabsLLVM(depth), ++MISC.LLVMtmpNumber, MISC.tabsLLVM(depth)));
+                return "%tmp" + MISC.LLVMtmpNumber;
+            }
+            else
+            {
+                LLVM.AddToCode(String.Format("{4}tail call {0} @{1}({2})\n", returnTypes().ToLLVM(), ASTTree.funcs[functionCallNumber].getName,
+                    param, MISC.tabsLLVM(depth),MISC.tabsLLVM(depth)));
+                return "";
+            }
         }
         public void Trace(int depth)
         {

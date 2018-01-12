@@ -1,0 +1,18 @@
+/*void S(){
+	int X = 10;
+	double BB = 100.0;
+}
+double getInArray (double* d){
+	double *c = d + 1;
+	double res = c[6] + c[5] + c[4] + c[3];
+	return res;
+}*/
+double main (int arg, char** atgv){
+	double d = 10.0;
+	double* dd = &d;//double dd[10] = {1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0};
+	dd[3] = 560.0;
+	double* ds = dd;
+	int X =10;
+	int B = 20;
+	return 0.0;//getInArray(dd);
+}

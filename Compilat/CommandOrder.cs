@@ -11,8 +11,18 @@ namespace Compilat
         // there can be any ASI doing one by one
         protected List<ICommand> commands;
 
-
-
+        public bool TryTraceLLVMGlobalVars (){
+            try
+            {
+                for (int i = 0; i < commands.Count; i++)
+                    LLVM.AddToCode((commands[i] as Assum).LLVMGLOBAL(0) + ", allign "+MISC.SyzeOf((commands[i] as Assum).returnTypes())+"\n");
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
         public CommandOrder(params ICommand[] cmnds)
         {
             commands = cmnds.ToList<ICommand>();
@@ -43,7 +53,6 @@ namespace Compilat
                         for (int j = 0; j < addedDefines.Count; j++) commands.Add(ParseCommand2(addedDefines[j]));  // inta;intb;intc;  -> 3 commands
                     }
                     else throw e; // any another bug
-
                 }
             }
 
@@ -328,6 +337,7 @@ namespace Compilat
                 commands[i].Trace(depth + 1);
             }
         }
+
 
         public virtual string ToLLVM(int depth)
         {

@@ -224,6 +224,19 @@ namespace Compilat
             DrawIerch();
         }
 
+        public static int SyzeOf(ValueType vt)
+        {
+            if (vt.pointerLevel > 0) return 4;
+            switch (vt.rootType)
+            {
+                case VT.Cboolean: return 1;
+                case VT.Cchar: return 1;
+                case VT.Cint: return 4;
+                case VT.Cdouble: return 8;
+                default:
+                    return 0;
+            }
+        }
 
         public static bool GoBack()
         {
@@ -231,11 +244,11 @@ namespace Compilat
             bool NoNeedToAddReturn = true;
             if (func.IndexOf("FUNCTION") == 0)
             {
-                if (func.IndexOf("$C") > 0 && func.IndexOf("$Cvoid") < 0 && func.IndexOf("R#") < 0)
+                if (func.IndexOf("main") != 9 && func.IndexOf("$C") > 0 && func.IndexOf("$Cvoid") < 0 && func.IndexOf("R#") < 0)
                 {
                     throw new Exception("No return in non-void function \"" + func.Substring(9, func.IndexOf("$", 9) - 9) + "\"!");
                 }
-                if (func.IndexOf("$Cvoid") >= 0 && func.IndexOf("R#") < 0)
+                if ( (func.IndexOf("$Cvoid") >= 0 )&& func.IndexOf("R#") < 0)
                     NoNeedToAddReturn = false;
             }
 

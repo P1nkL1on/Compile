@@ -23,6 +23,7 @@ namespace Compilat
         ValueType valType;
         Object data;
         ConsoleColor clr;
+        string LLVMname;
 
         public ASTvalue(ValueType vt, Object data)
         {
@@ -37,6 +38,7 @@ namespace Compilat
         }
         public ASTvalue(string s, bool calledFromDefined)
         {
+            LLVMname = "?LLVMNAME?";
             string nums = "-1234567890.";
             bool isnum = true;
             int numPoints = 0;
@@ -59,7 +61,7 @@ namespace Compilat
                 if (s.IndexOf('\'') == 0 && s.LastIndexOf('\'') == s.Length - 1)
                 {
                     if (s.Length == 3 || (s.Length == 4 && s[1] == '\\'))
-                    { this.valType = new ValueType(VT.Cchar); this.data = (object)(s[1]); clr = ConsoleColor.DarkCyan; }
+                    { this.valType = new ValueType(VT.Cchar); this.data = (object)(s[1]); LLVMname = s[1]+"";  clr = ConsoleColor.DarkCyan; }
                     else
                     { throw new Exception("Char can not be more than 1 symbol"); }
                 }
@@ -67,13 +69,28 @@ namespace Compilat
                 {
                     // detect string
                     if (s.IndexOf('\"') == 0 && s.LastIndexOf('\"') == s.Length - 1)
-                    { this.valType = new ValueType(VT.Cstring); this.data = (object)(s.Substring(1, s.Length - 2)); clr = ConsoleColor.DarkCyan; }
+                    {
+                        this.valType = new ValueType(VT.Cstring);
+                        string STR = s.Substring(1, s.Length - 2);
+                        this.data = (object)(STR);
+                        clr = ConsoleColor.DarkCyan;
+
+                        string STRLLVM = STR.Replace("\\r", "").Replace("\\n", "\\0D") + "\\00";
+
+                        int leng = STRLLVM.Length;
+                        for (int sk = 0; sk < STRLLVM.Length - 1; sk++)
+                            if (STRLLVM[sk] == '\\')
+                                leng -= 2;
+                        LLVM.AddToCode(String.Format("@str{0} = pritvate unnamed_addr constant [{1} x i8] c\"{2}\"\n", LLVM.globalVars, leng, STRLLVM));
+                        LLVMname = "str" + LLVM.globalVars;
+                        LLVM.globalVars++;
+                    }
                     else
                     {
                         if (s.ToLower() == "true" || s.ToLower() == "false")
                         {
                             this.valType = new ValueType(VT.Cboolean); this.data = (object)((s.ToLower() == "true"));
-                            clr = ConsoleColor.Gray;
+                            clr = ConsoleColor.Gray; LLVMname = s.ToLower();
                         }
                         else
                         {
@@ -101,10 +118,26 @@ namespace Compilat
         }
         public virtual string ToLLVM(int depth)
         {
-            return String.Format("{0}",
-                (returnTypes() == new ValueType(VT.Cdouble)?
-                (data.ToString() + ((data.ToString().IndexOf(",") < 0)? "," : "")).Replace(',','.').PadRight(6, '0')    // недостающие нули в записи с плавающей запятой
-                : data.ToString() ));
+            
+            //return String.Format("{0}",
+            //    (returnTypes() == new ValueType(VT.Cdouble) ?
+            //    (data.ToString() + ((data.ToString().IndexOf(",") < 0) ? "," : "")).Replace(',', '.').PadRight(6, '0')    // недостающие нули в записи с плавающей запятой
+            //    : data.ToString()));
+            switch (returnTypes().rootType)
+            {
+                case VT.Cdouble:
+                    return data.ToString() + ((data.ToString().IndexOf(",") < 0) ? "," : "").Replace(',', '.').PadRight(6, '0');
+                case VT.Cint:
+                    return data.ToString();
+                case VT.Cstring:
+                    return "@" + LLVMname;
+                case VT.Cchar:
+                    return ((int)(LLVMname[0] )).ToString();
+                case VT.Cboolean:
+                    return (LLVMname == "true")? "1" : "0";
+                default:
+                    return "???";
+            }
         }
         //public virtual string ToLLVMwtType()
         //{
@@ -162,7 +195,7 @@ namespace Compilat
     public struct AdressType
     {
         int adressId;
-        VAT typ;
+        public VAT typ;
         public AdressType(int id, VAT typ)
         {
             this.adressId = id; this.typ = typ;
@@ -197,7 +230,7 @@ namespace Compilat
 
         AdressType adress;
         string localSpace;
-        
+
 
         public ASTvariable()
         {
@@ -221,7 +254,7 @@ namespace Compilat
         }
         public string ToLLVM(int depth)
         {
-            return String.Format("{0} ...", MISC.tabsLLVM(depth));
+            return String.Format(ToLLVM());
         }
 
         public virtual void Trace(int depth)
@@ -230,11 +263,11 @@ namespace Compilat
             MISC.ConsoleWrite(pointerMuch(valType.pointerLevel), ConsoleColor.Red);
             MISC.ConsoleWrite(name, ConsoleColor.Green);
             MISC.ConsoleWriteLine("\t" + getValueType.ToString().Substring(1) + "" + adress, ConsoleColor.Red);
-            
+
         }
         public virtual string ToLLVM()
         {
-            return "%" + name;
+            return ((adress.typ == VAT.Global)? "@" : "%") + name;
         }
         public virtual void TraceMore(int depth)
         {
