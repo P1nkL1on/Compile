@@ -1,0 +1,13 @@
+int main (){
+	
+	int x = 10;
+	int* px = &x;
+	int** ppx = &px;
+	
+	x = 1;
+	px[14] = 2;
+	//px[0] = 3;
+	//ppx[0][0] = 4;
+	
+	return px[1];
+}

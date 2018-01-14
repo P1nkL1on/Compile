@@ -90,6 +90,7 @@ namespace Compilat
             bool noElse = (actions[1].CommandCount <= 0);
             // 
             LLVM.AddToCode(";If\n");
+            condition.CallFromIf = true;
             string condLine = condition.getTrueEqual().ToLLVM(depth);
             LLVM.AddToCode(String.Format("{0}%cond{1} = icmp {2}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, condLine));
             LLVM.AddToCode(String.Format("{0}br i1 %cond{1}, label %Ifthen{1}, label %{2}{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, (noElse) ? "Ifcont" : "Ifelse"));

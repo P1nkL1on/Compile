@@ -59,26 +59,25 @@ namespace Compilat
         }
         public override string ToLLVM(int depth)
         {
-            if (true)//defining)
-            {
-                ASTvariable vari = null;
-                if (a as GetValByAdress != null) vari = ((a as GetValByAdress).from as ASTvariable);
-                if (a as Define != null) vari = (a as Define).var;
 
-                if (vari != null && vari.everUsed > 0)// && !vari.wasLoaded)
-                {
-                    LLVM.varisReload.Add(vari);
-                    vari.reloadedTimes++;
-                    LLVM.CommandOrderQueueCode += String.Format("{0}{1} = load {2}, {3} {4}\n", MISC.tabsLLVM(depth), vari.ToLLVM(), vari.returnTypes().ToLLVM(), vari.returnTypes().TypeOfPointerToThis().ToLLVM(), MISC.RemoveCall(vari.ToLLVM()));
-                    vari.reloadedTimes--;
-                }
+            ASTvariable vari = null;
+            if (a as GetValByAdress != null) vari = ((a as GetValByAdress).from as ASTvariable);
+            if (a as Define != null) vari = (a as Define).var;
+
+            if (vari != null && vari.everUsed > 0 && vari.adress.typ != VAT.Global)// && !vari.wasLoaded)
+            {
+                LLVM.varisReload.Add(vari);
+                vari.reloadedTimes++;
+                LLVM.CommandOrderQueueCode += String.Format("{0}{1} = load {2}, {3} {4}\n", MISC.tabsLLVM(depth), vari.ToLLVM(), vari.returnTypes().ToLLVM(), vari.returnTypes().TypeOfPointerToThis().ToLLVM(), MISC.RemoveCall(vari.ToLLVM()));
+                vari.reloadedTimes--;
             }
+
             if (a as GetValByAdress != null)
             {
                 // variable? from
-                ASTvariable vari = ((a as GetValByAdress).from as ASTvariable);
+                ASTvariable vari2 = ((a as GetValByAdress).from as ASTvariable);
                 // NOT случай, когда переменная просто проходная- не глобальная, не параметр, и обращение идет прямо на неё
-                if (!(vari != null /* && !vari.everPointed*/ && vari.adress.typ != VAT.Parameter))
+                if (!(vari2 != null /* && !vari.everPointed*/ && vari2.adress.typ != VAT.Parameter))
                 {
                     (a as GetValByAdress).LLVM_isLeftOperand = true;
                     string number = b.ToLLVM(depth), add_last = a.ToLLVM(depth);
@@ -86,8 +85,9 @@ namespace Compilat
                     return "";
                 }
             }
-           
-            return String.Format("{0}store {3} {4}, {1} {2}", MISC.tabsLLVM(depth), a.returnTypes().TypeOfPointerToThis().ToLLVM(), MISC.RemoveCall(a.ToLLVM(depth)), b.returnTypes().ToLLVM(), b.ToLLVM(depth));
+            if (!(vari != null && vari.adress.typ == VAT.Global))
+                return String.Format("{0}store {3} {4}, {1} {2}", MISC.tabsLLVM(depth), a.returnTypes().TypeOfPointerToThis().ToLLVM(), MISC.RemoveCall(a.ToLLVM(depth)), b.returnTypes().ToLLVM(), b.ToLLVM(depth));
+            return "";
         }
         public string LLVMGLOBAL(int depth)
         {
@@ -113,6 +113,7 @@ namespace Compilat
 
     public class Equal : BinaryOperation
     {
+        public bool CallFromIf;
         public Equal(IOperation left, IOperation right)
         {
             operationString = "==";
@@ -120,19 +121,31 @@ namespace Compilat
             returnType = TypeConverter.TryConvertEqual(ref children);
             a = children[0]; b = children[1];
             returnType = new ValueType(VT.Cboolean);
+            CallFromIf = false;
         }
         public override string ToLLVM(int depth)
         {
-            return LLVM.BinaryEqualToLLVM(depth, "eq", a, b, a.returnTypes());
+            if (!CallFromIf)
+                return LLVM.BinaryEqualToLLVM(depth, "eq", a, b, a.returnTypes());
+            MISC.LLVMtmpNumber++;
+            int num = MISC.LLVMtmpNumber;
+            string kids = String.Format("{0}, {1}\n", a.ToLLVM(depth), b.ToLLVM(depth));
+            return String.Format("{3} {1} {2}", num, a.returnTypes().ToLLVM(), kids, "eq", MISC.tabsLLVM(depth));
         }
 
         public IOperation getTrueEqual()
         {
-            if (b as ASTvalue != null && (b as ASTvalue).getValueType == new ValueType(VT.Cboolean) && (bool)((b as ASTvalue).getValue) == true)
-                return a;
-            if (a as ASTvalue != null && (a as ASTvalue).getValueType == new ValueType(VT.Cboolean) && (bool)((a as ASTvalue).getValue) == true)
-                return b;
             return this;
+            //bool notB = false, notA = false;
+            //if (b as ASTvalue != null && (b as ASTvalue).getValueType == new ValueType(VT.Cboolean) && (bool)((b as ASTvalue).getValue) == true)
+            //    notB = true;
+            //if (a as ASTvalue != null && (a as ASTvalue).getValueType == new ValueType(VT.Cboolean) && (bool)((a as ASTvalue).getValue) == true)
+            //    notA = true;
+
+            //if (notA && !notB) return b;
+            //if (notB && !notA) return a;
+
+            //return this;
         }
     }
     class Uneq : BinaryOperation

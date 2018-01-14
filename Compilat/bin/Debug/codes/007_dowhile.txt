@@ -1,0 +1,11 @@
+#include <stdio.h>
+int main (int argc, char** args){
+	int i = 10;
+	bool apaca = true;
+	do{
+		puts ("aaaa");
+		//printf("hi mark! x %i \n", i);
+		i -= 3;
+	}while( i > 10);
+	return 13;
+}

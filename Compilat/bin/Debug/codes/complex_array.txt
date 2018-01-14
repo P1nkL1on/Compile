@@ -1,0 +1,7 @@
+int main (){
+	string a[10] = {"mike", "john", "mary", "ashley"};
+
+	//int** b[2] = {{{1},{2}}, {{2},{3,6,7,8,9}}};
+	
+	return 0;
+}

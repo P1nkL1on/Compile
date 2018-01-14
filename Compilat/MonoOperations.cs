@@ -113,17 +113,15 @@ namespace Compilat
             Console.Write(MISC.tabs(depth));
             MISC.ConsoleWriteLine("DEFINE"/* [" + defineType.ToString() + "]"*/, ConsoleColor.DarkYellow);
             MISC.finish = true; a.Trace(depth + 1);
-            
+
             //b.Trace(depth + 1);
         }
         public override string ToLLVM(int depth)
         {
             string res = var.ToLLVM();
-            //if (var.everUsed > 0 && !var.wasLoaded)
-            //{ var.wasLoaded = true; LLVM.CommandOrderQueueCode += String.Format("{0}{1} = load {2}, {3} {4}\n", MISC.tabsLLVM(depth), "%~" + var.name, var.returnTypes().ToLLVM(), var.returnTypes().TypeOfPointerToThis().ToLLVM(), var.ToLLVM()); }
-            LLVM.AddToCode(String.Format("{0}{1} = alloca {2}\n", MISC.tabsLLVM(depth), res, var.returnTypes().ToLLVM()));
+            if (var.adress.typ != VAT.Global)
+                LLVM.AddToCode(String.Format("{0}{1} = alloca {2}\n", MISC.tabsLLVM(depth), res, var.returnTypes().ToLLVM()));
             return res;
-            
             // %X = alloca i32 ; we have a pointer for %X, we like writing int*X = new int(); or some shit like it
             // now we can store i32 100, i32* %X
         }
@@ -225,7 +223,9 @@ namespace Compilat
                 try
                 {
                     adder = (a as BinarySummatic).FindNonVariable(out from);
-                }catch (Exception E){
+                }
+                catch (Exception E)
+                {
                     // case if you have only *d, but not d[0], so there is no summ action in there
                     from = adress; adder = new ASTvalue(new ValueType(VT.Cint), (object)0);
                 }
@@ -259,6 +259,11 @@ namespace Compilat
                 return -2;
             return -1;
         }
+        public override void FindAllVariables(ref List<ASTvariable> vars)
+        {
+            if (variable != null)
+                vars.Add(variable);
+        }
         public override string ToLLVM(int depth)
         {
             if (variable == null)
@@ -267,7 +272,7 @@ namespace Compilat
                 if ((adder as ASTvalue) != null && ((adder as ASTvalue).getValueType == VT.Cint) && (int)((adder as ASTvalue).getValue) == 0)
                     no_need_getelementptr = true;
 
-               // MISC.LLVMtmpNumber += (no_need_getelementptr || LLVM_isLeftOperand) ? ((LLVM_isLeftOperand)? 0 : 1) : 2;   // need only 1 variable if not getelementptr
+                // MISC.LLVMtmpNumber += (no_need_getelementptr || LLVM_isLeftOperand) ? ((LLVM_isLeftOperand)? 0 : 1) : 2;   // need only 1 variable if not getelementptr
                 string store_or_load_from = "????";
                 if (!no_need_getelementptr)
                 {
@@ -277,12 +282,12 @@ namespace Compilat
                     store_or_load_from = "%tmp" + num;
                 }
                 else
-                    store_or_load_from = ""+from.ToLLVM(0);
+                    store_or_load_from = "" + from.ToLLVM(0);
                 MISC.LLVMtmpNumber++;
                 int num2 = MISC.LLVMtmpNumber;
                 if (!LLVM_isLeftOperand)
                 {
-                    LLVM.AddToCode(MISC.tabsLLVM(depth) + "%tmp" + (num2 + 1) + " = " + LLVM.Load(returnTypes(), from.returnTypes().ToLLVM() + " " +store_or_load_from) + "\n");
+                    LLVM.AddToCode(MISC.tabsLLVM(depth) + "%tmp" + (num2 + 1) + " = " + LLVM.Load(returnTypes(), from.returnTypes().ToLLVM() + " " + store_or_load_from) + "\n");
                     return "%tmp" + (num2 + 1);
                 }
                 else
@@ -294,7 +299,7 @@ namespace Compilat
             }
             return variable.ToLLVM();
         }
-        
+
         public override void Trace(int depth)
         {
             if (variable == null)
@@ -368,6 +373,23 @@ namespace Compilat
             operationString = String.Format("{0}", toType.ToString().Substring(1));
             a = val;
             returnType = toType;
+        }
+        public override string ToLLVM(int depth)
+        {
+            string selectedType = "conv";
+
+            int have = MISC.ConvertSyze(a.returnTypes()),
+                need = MISC.ConvertSyze(returnType);
+            if (have * need > 0)
+            {
+                // not float int values
+                if (need > have) selectedType = "zext"; else selectedType = "trunc";
+                if (need == 64) selectedType = "inttoptr";
+            }
+            else
+                selectedType = "sitofp";
+
+            return LLVM.TypeConvertLLVM(depth, selectedType, a, returnType);
         }
     }
 }

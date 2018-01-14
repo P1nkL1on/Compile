@@ -22,6 +22,7 @@ namespace Compilat
 
         public static string BinaryToLLVM(int depth, string keyword, IOperation a, IOperation b, ValueType returnType)
         {
+            
             //int curNumber = MISC.LLVMtmpNumber + 1;
             MISC.LLVMtmpNumber++;
             int num = MISC.LLVMtmpNumber;
@@ -34,8 +35,21 @@ namespace Compilat
 
         public static string BinaryEqualToLLVM(int depth, string keyword, IOperation a, IOperation b, ValueType returnType)
         {
+            if (keyword != "and" && keyword != "or")
+                keyword = "icmp " + keyword;
+            MISC.LLVMtmpNumber++;
+            int num = MISC.LLVMtmpNumber;
             string kids = String.Format("{0}, {1}\n", a.ToLLVM(depth), b.ToLLVM(depth));
-            return String.Format("{3} {1} {2}", MISC.LLVMtmpNumber, a.returnTypes().ToLLVM(), kids, keyword);
+            LLVM.AddToCode( String.Format("{4}%tmp{0} = {3} {1} {2}", num, a.returnTypes().ToLLVM(), kids, keyword, MISC.tabsLLVM(depth)));
+            return "%tmp" + num;
+        }
+        public static string TypeConvertLLVM(int depth, string keyword, IOperation what, ValueType ty2)
+        {
+            MISC.LLVMtmpNumber++;
+            int num = MISC.LLVMtmpNumber;
+            string boy = what.returnTypes().ToLLVM() + " " + what.ToLLVM(depth);
+            LLVM.AddToCode(String.Format("{0}%tmp{1} = {2} {3} to {4}\n", MISC.tabsLLVM(depth), num, keyword, boy, ty2.ToLLVM() ));
+            return "%tmp" + num;
         }
 
         public static string ParamToLLVM(int depth, string keyword, ValueType returnType, params IOperation[] ops)

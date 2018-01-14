@@ -36,6 +36,8 @@ namespace Compilat
             if (vt == VT.Cint || vt == VT.Cdouble) clr = ConsoleColor.DarkCyan;
             if (vt == VT.Cboolean) clr = ConsoleColor.Gray;
             if (vt == VT.Cadress) clr = ConsoleColor.DarkGray;
+            if (vt == VT.Cboolean && vt.pointerLevel == 0)
+            { LLVMname = ((bool)data).ToString(); }
         }
         public ASTvalue(string s, bool calledFromDefined)
         {
@@ -77,7 +79,7 @@ namespace Compilat
                         this.data = (object)(STR);
                         clr = ConsoleColor.DarkCyan;
 
-                        string STRLLVM = STR.Replace("\\r", "").Replace("\\n", "\\0D") + "\\00";
+                        string STRLLVM = STR.Replace("\\r", "").Replace("\\n", "\\0A") + "\\00";
 
                         int leng = STRLLVM.Length;
                         for (int sk = 0; sk < STRLLVM.Length - 1; sk++)
@@ -139,7 +141,7 @@ namespace Compilat
                 case VT.Cchar:
                     return ((int)(LLVMname[0])).ToString();
                 case VT.Cboolean:
-                    return (LLVMname == "true") ? "1" : "0";
+                    return (LLVMname.ToLower() == "true") ? "1" : "0";
                 default:
                     return "???";
             }
@@ -199,7 +201,7 @@ namespace Compilat
     }
     public struct AdressType
     {
-        int adressId;
+        public int adressId;
         public VAT typ;
         public AdressType(int id, VAT typ)
         {
@@ -277,7 +279,7 @@ namespace Compilat
         }
         public virtual string ToLLVM()
         {
-            return ((adress.typ == VAT.Global) ? "@" : "%") + ((reloadedTimes > 0) ? "$" + reloadedTimes : "") + name;
+            return ((adress.typ == VAT.Global && reloadedTimes == 0) ? "@" : "%") + ((reloadedTimes > 0) ? "$" + reloadedTimes : "") + "_" + adress.adressId + name;
         }
         public virtual void TraceMore(int depth)
         {

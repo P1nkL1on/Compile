@@ -1,0 +1,9 @@
+int main (){
+	bool no = false, yes = true;
+	
+	double res = 1.0;
+	if ((0 == 0) || (1==1) || (2 == 2))
+		res *= 2;
+	
+	return 30 - no * 17 + yes * 12;
+}

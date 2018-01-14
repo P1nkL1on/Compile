@@ -1,0 +1,12 @@
+char a = 'a';
+int CN = 122;
+int LIFE = 42;
+
+int main (){
+	int x = 10;
+	int y = 20;
+	
+	x = y;
+	x += CN;
+	x++;
+}

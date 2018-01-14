@@ -19,6 +19,12 @@ namespace Compilat
 
     public abstract class MonoOperation : IOperation
     {
+        public virtual void FindAllVariables(ref List<ASTvariable> vars)
+        {
+            if (a as ASTvariable != null) vars.Add(a as ASTvariable);
+            if (a as BinaryOperation != null) (a as BinaryOperation).FindAllVariables(ref vars);
+            if (a as MonoOperation != null) (a as MonoOperation).FindAllVariables(ref vars);
+        }
         protected string operationString = "???";
         protected ValueType returnType;
         protected TypeConvertion atArg;
@@ -157,6 +163,14 @@ namespace Compilat
 
     public abstract class BinaryOperation : IOperation
     {
+        public virtual void FindAllVariables (ref List<ASTvariable> vars){
+            if (a as ASTvariable != null) vars.Add(a as ASTvariable);
+            if (a as BinaryOperation != null) (a as BinaryOperation).FindAllVariables(ref vars);
+            if (a as MonoOperation != null) (a as MonoOperation).FindAllVariables(ref vars);
+            if (b as ASTvariable != null) vars.Add(b as ASTvariable);
+            if (b as BinaryOperation != null) (b as BinaryOperation).FindAllVariables(ref vars);
+            if (b as MonoOperation != null) (b as MonoOperation).FindAllVariables(ref vars);
+        }
         protected string operationString = "???";
         protected ValueType returnType;
         // acceptable left and right types

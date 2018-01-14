@@ -14,6 +14,7 @@ namespace Compilat
         public static List<IASTtoken> tokens = new List<IASTtoken>();
         public static List<ASTvariable> variables = new List<ASTvariable>();
         public static CommandOrder GlobalVars = new CommandOrder();
+        public static List<ASTvariable> GlobalVarsVars = new List<ASTvariable>();
 
         public static ConsoleColor clr = ConsoleColor.Black;
         static List<int> generatedTime = new List<int>();
@@ -82,6 +83,7 @@ namespace Compilat
                     MISC.LLVMtmpNumber = 0;
                     LLVM.AddToCode(funcs[i].ToLLVM(i) + "\n\n");
                     LLVM.AddToCode("\n");
+
                 }
             string pathLLVM = path.Remove(path.LastIndexOf('.')) + "LLVM.ll";
             System.IO.File.WriteAllText(pathLLVM, LLVM.CurrentCode);
@@ -141,8 +143,10 @@ namespace Compilat
             variables = new List<ASTvariable>();
             MISC.ClearStack();
             GlobalVars = new CommandOrder();
+            GlobalVarsVars = new List<ASTvariable>();
             MISC.ResetAdressing();
             MISC.LLVMtmpNumber = 0;
+            MISC.GlobalOperatorNumber = 0;
         }
 
         public ASTTree(string s, string path)
@@ -179,7 +183,11 @@ namespace Compilat
                         if (funcs[i] != null && funcs[j] != null)
                             if (MISC.CompareFunctionSignature(funcs[i], funcs[j]))
                             { funcs[i] = funcs[j]; funcs[j] = null; }
-                
+
+                //GlobalVarsVars = GlobalVars.findAllVariables();
+                foreach (ASTvariable va in variables)
+                    if (va.adress.typ == VAT.Global && va.everUsed > 0)
+                        GlobalVarsVars.Add(va);
             }
             catch (Exception e)
             {

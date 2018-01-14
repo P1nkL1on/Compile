@@ -21,7 +21,7 @@ namespace Compilat
         public int LLVMnumber = -1;
         //
         public int ParamCount { get { return input.Count; } }
-        static Define GetDefineFromString (string s)
+        static Define GetDefineFromString(string s)
         {
             int varType = Math.Max((s.IndexOf("int") == 0) ? 2 : -1, Math.Max((s.IndexOf("double") == 0) ? 5 : -1, Math.Max((s.IndexOf("char") == 0) ? 3 : -1,
                 Math.Max((s.IndexOf("string") == 0) ? 5 : -1, (s.IndexOf("bool") == 0) ? 3 : -1))));
@@ -150,6 +150,12 @@ namespace Compilat
             if (!declareOnly)
             {
                 LLVM.AddToCode(String.Format("{0}define {1} @{2}({3}) #{4} ", MISC.tabsLLVM(depth), retType.ToLLVM(), getName, param, funcNumber) + "{\n" /*+ MISC.tabsLLVM(depth) + "entry:\n"*/);//  + code + "}";
+                // add used global variables
+                foreach (ASTvariable vari in ASTTree.GlobalVarsVars)
+                {
+                    vari.reloadedTimes++;
+                    LLVM.AddToCode(String.Format("{0}{1} = load {2}, {3} {4}\n", MISC.tabsLLVM(depth + 1), vari.ToLLVM(), vari.returnTypes().ToLLVM(), vari.returnTypes().TypeOfPointerToThis().ToLLVM(),"@" +  MISC.RemoveCall(vari.ToLLVM()).Substring(1)));
+                }
                 LLVM.AddToCode(actions.ToLLVM(depth + 1));
                 return MISC.tabsLLVM(depth) + "}";
             }
@@ -175,6 +181,13 @@ namespace Compilat
             for (int i = 0; i < this.input.Count; i++)
                 res.Add(this.input[i].returnTypes());
             return res;
+        }
+        public string returnListLLVMCall()
+        {
+            string res = "";
+            for (int i = 0; i < input.Count; i++)
+                res += input[i].returnTypes().ToLLVM() + ", ";
+            return (infiniteParamsAfter > 0) ? res + "..." : res.Remove(res.Length - 2);
         }
         public int CommandCount
         {

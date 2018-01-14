@@ -1,0 +1,10 @@
+#include <stdio.h>
+int main (int argc, char** args){
+	int i = 10;
+	bool apaca = true;
+	while (i > 0){
+		printf("hi mark! x %i \n", i);
+		i -= 3;
+	}
+	return 13;
+}

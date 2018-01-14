@@ -1,0 +1,8 @@
+#include <stdio.h>
+int main (int argc, char** args){
+	int LENG = 10;
+	for (int i = 0; i < LENG; i ++)
+		for (int j = 0; j < LENG; j++, puts("  \n"))
+			printf(" %i x %i   %i", i, j, i*j );
+	return 1;
+}

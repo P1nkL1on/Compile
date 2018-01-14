@@ -237,6 +237,18 @@ namespace Compilat
                     return 0;
             }
         }
+        public static int ConvertSyze(ValueType vt)
+        {
+            if (vt.pointerLevel > 0) return 64;
+            switch (vt.rootType)
+            {
+                case VT.Cboolean: return 1;
+                case VT.Cchar: return 8;
+                case VT.Cint: return 32;
+                default:
+                    return -64;
+            }
+        }
 
         public static bool GoBack()
         {

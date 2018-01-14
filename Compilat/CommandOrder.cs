@@ -10,7 +10,23 @@ namespace Compilat
     {
         // there can be any ASI doing one by one
         protected List<ICommand> commands;
-
+        public List<ASTvariable> findAllVariables()
+        {
+            List<ASTvariable> res = new List<ASTvariable>();
+            for (int i = 0; i < commands.Count; i++)
+                
+            {
+                List<ASTvariable> add = new List<ASTvariable>();
+                if (commands[i] as BinaryOperation != null)
+                    (commands[i] as BinaryOperation).FindAllVariables(ref add);
+                if (commands[i] as MonoOperation != null)
+                    (commands[i] as MonoOperation).FindAllVariables(ref add);
+                foreach (ASTvariable va in add)
+                    if (res.IndexOf(va) < 0)
+                        res.Add(va);
+            }
+            return res;
+        }
         public bool TryTraceLLVMGlobalVars()
         {
             try
@@ -347,7 +363,7 @@ namespace Compilat
             {
                 string add = String.Format("{0}{1}", commands[i].ToLLVM(depth), "\n");
                 if (!(//commands[i] as Summ != null || commands[i] as Diff != null || 
-                    commands[i] as Define != null
+                    commands[i] as Define != null || commands[i] as ASTFunctionCall != null
                     ))
                 //|| (commands[i] as ASTFunctionCall != null)))
                 {

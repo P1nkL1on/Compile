@@ -22,7 +22,8 @@ define i32 @Mul(i32 %X, i32 %Y) #3 {
   %res = alloca i32
   %tmp1 = mul i32 %X, %Y
   store i32 %tmp1, i32* %res
-  ret i32 %res
+  %$1res = load i32, i32* %res
+  ret i32 %$1res
 }
 
 
