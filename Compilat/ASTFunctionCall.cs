@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Compilat
 {
-    struct ASTFunctionCall : IOperation
+    class ASTFunctionCall : IOperation
     {
 
         int functionCallNumber;

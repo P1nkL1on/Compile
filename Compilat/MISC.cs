@@ -267,18 +267,18 @@ namespace Compilat
 
             return;
         }
-        public static void defineVariable(int variableNumber)
+        public static bool defineVariable(int variableNumber)
         {
             for (int i = 0; i < levelVariables.Count; i++)
                 for (int j = 0; j < levelVariables[i].Count; j++)
                     if (-levelVariables[i][j] == variableNumber + 1)
                     {
                         levelVariables[i][j] *= -1;
-                        break;
+                        return true;
                     }
             DrawIerch();
 
-            return;
+            return false;
         }
         public static bool isVariableAvailable(int variableNumber, bool anywayAvailable)
         {
@@ -514,6 +514,19 @@ namespace Compilat
                     return i;
             }
             return -1; //(level == 0) ? pos :
+        }
+
+        static string nums = "0123456789";
+        public static string RemoveCall(string s)
+        {
+            if (s[0] != '%' || s[1] != '$')
+                return s;
+            int nowon = 2;
+            while (nowon < s.Length && nums.IndexOf(s[nowon]) >= 0) nowon++;
+
+            //if (s.IndexOf("_call_") >= 0)
+            //    return s.Remove(s.IndexOf("_call_"));
+            return "%" + s.Substring(nowon);
         }
     }
 }

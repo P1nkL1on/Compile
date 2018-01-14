@@ -111,16 +111,21 @@ namespace Compilat
         public override void Trace(int depth)
         {
             Console.Write(MISC.tabs(depth));
-            MISC.ConsoleWriteLine("DEFINE [" + defineType.ToString() + "]", ConsoleColor.DarkGreen);
-            a.Trace(depth + 1);
-            MISC.finish = true;
-            b.Trace(depth + 1);
+            MISC.ConsoleWriteLine("DEFINE"/* [" + defineType.ToString() + "]"*/, ConsoleColor.DarkYellow);
+            MISC.finish = true; a.Trace(depth + 1);
+            
+            //b.Trace(depth + 1);
         }
         public override string ToLLVM(int depth)
         {
-            //if (var.getPointerLevel == 0)
-            return var.ToLLVM();
-            //return "".PadLeft(var.getPointerLevel, '*') ;
+            string res = var.ToLLVM();
+            //if (var.everUsed > 0 && !var.wasLoaded)
+            //{ var.wasLoaded = true; LLVM.CommandOrderQueueCode += String.Format("{0}{1} = load {2}, {3} {4}\n", MISC.tabsLLVM(depth), "%~" + var.name, var.returnTypes().ToLLVM(), var.returnTypes().TypeOfPointerToThis().ToLLVM(), var.ToLLVM()); }
+            LLVM.AddToCode(String.Format("{0}{1} = alloca {2}\n", MISC.tabsLLVM(depth), res, var.returnTypes().ToLLVM()));
+            return res;
+            
+            // %X = alloca i32 ; we have a pointer for %X, we like writing int*X = new int(); or some shit like it
+            // now we can store i32 100, i32* %X
         }
     }
 
@@ -184,11 +189,15 @@ namespace Compilat
                 throw new Exception("Can not get adress of non-variable token!");
             operationString = "Get adress";
             a = val;
+
+            //try { ((val as GetValByAdress).from as ASTvariable).everPointed = true; }
+            //catch (Exception e) { }
+
             returnType = a.returnTypes().TypeOfPointerToThis();
         }
         public override string ToLLVM(int depth)
         {
-            return LLVM.ParamToLLVM(depth, "", returnType, a);
+            return a.ToLLVM(depth);//LLVM.ParamToLLVM(depth, "", returnType, a);
         }
     }
     class GetValByAdress : MonoOperation
@@ -196,7 +205,7 @@ namespace Compilat
         public bool LLVM_isLeftOperand = false;
         ASTvariable variable;
 
-        IOperation from;
+        public IOperation from;
         IOperation adder;
         public GetValByAdress(IOperation adress, ValueType retType)
         {
@@ -207,12 +216,19 @@ namespace Compilat
                 variable = ASTTree.variables[(int)((adress as ASTvalue).getValue)];
                 operationString = variable.name;
                 returnType = variable.returnTypes();
+                from = variable;
                 return;
             }
             catch (Exception e)
             {
                 variable = null;
-                adder = (a as BinarySummatic).FindNonVariable(out from);
+                try
+                {
+                    adder = (a as BinarySummatic).FindNonVariable(out from);
+                }catch (Exception E){
+                    // case if you have only *d, but not d[0], so there is no summ action in there
+                    from = adress; adder = new ASTvalue(new ValueType(VT.Cint), (object)0);
+                }
                 returnType = retType.TypeOfPointedByThis();
             };
         }
@@ -247,20 +263,33 @@ namespace Compilat
         {
             if (variable == null)
             {
-                MISC.LLVMtmpNumber+= 2;
-                int num = MISC.LLVMtmpNumber - 1;
-                LLVM.AddToCode(MISC.tabsLLVM(depth) + "%tmp" +(num)+" = "+ LLVM.ParamToLLVM(depth, "getelementptr", returnTypes(), from, adder));
+                bool no_need_getelementptr = false;
+                if ((adder as ASTvalue) != null && ((adder as ASTvalue).getValueType == VT.Cint) && (int)((adder as ASTvalue).getValue) == 0)
+                    no_need_getelementptr = true;
+
+               // MISC.LLVMtmpNumber += (no_need_getelementptr || LLVM_isLeftOperand) ? ((LLVM_isLeftOperand)? 0 : 1) : 2;   // need only 1 variable if not getelementptr
+                string store_or_load_from = "????";
+                if (!no_need_getelementptr)
+                {
+                    MISC.LLVMtmpNumber++;
+                    int num = MISC.LLVMtmpNumber;
+                    LLVM.AddToCode(MISC.tabsLLVM(depth) + "%tmp" + (num) + " = " + LLVM.ParamToLLVM(depth, "getelementptr", returnTypes(), from, adder));
+                    store_or_load_from = "%tmp" + num;
+                }
+                else
+                    store_or_load_from = ""+from.ToLLVM(0);
+                MISC.LLVMtmpNumber++;
+                int num2 = MISC.LLVMtmpNumber;
                 if (!LLVM_isLeftOperand)
                 {
-                    LLVM.AddToCode(MISC.tabsLLVM(depth) + "%tmp" + (num + 1) + " = " + LLVM.Load(returnTypes(), from.returnTypes().ToLLVM() + " %tmp" + num) + "\n");
-                    return "%tmp" + (num + 1);
+                    LLVM.AddToCode(MISC.tabsLLVM(depth) + "%tmp" + (num2 + 1) + " = " + LLVM.Load(returnTypes(), from.returnTypes().ToLLVM() + " " +store_or_load_from) + "\n");
+                    return "%tmp" + (num2 + 1);
                 }
                 else
                 {
                     LLVM_isLeftOperand = false;
-                    MISC.LLVMtmpNumber--;
                     LLVM.AddToCode(MISC.tabsLLVM(depth) + "store ");
-                    return String.Format(" {0} tmp{1}, align {2}", from.returnTypes().ToLLVM(), num, MISC.SyzeOf(returnTypes()));
+                    return String.Format(" {0} {1}, align {2}", from.returnTypes().ToLLVM(), store_or_load_from, MISC.SyzeOf(returnTypes()));
                 }
             }
             return variable.ToLLVM();

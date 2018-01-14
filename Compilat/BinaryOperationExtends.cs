@@ -9,9 +9,11 @@ namespace Compilat
 
     class Assum : BinaryOperation
     {
+        public bool defining;
         public string requiredUpdate;
         public Assum(IOperation left, IOperation right)
         {
+            defining = false;
             operationString = "=";
             IOperation[] children = new IOperation[2] { left, right };
             returnType = TypeConverter.TryConvertAsum(ref children);
@@ -19,7 +21,7 @@ namespace Compilat
             requiredUpdate = "none";
             //
             int foundNumber = -1;
-            for (int i = ASTTree.variables.Count - 1; i >= 0 ; i--)
+            for (int i = ASTTree.variables.Count - 1; i >= 0; i--)
             {
                 if ((a as Define) != null && ASTTree.variables[i].name == (a as Define).varName)
                 {
@@ -37,7 +39,7 @@ namespace Compilat
             if (foundNumber < 0)
                 throw new Exception("Assumming not a variable!");
             else
-                MISC.defineVariable(foundNumber);
+                defining = MISC.defineVariable(foundNumber);
             //
         }
         public string GetAssumableName
@@ -57,18 +59,35 @@ namespace Compilat
         }
         public override string ToLLVM(int depth)
         {
+            if (true)//defining)
+            {
+                ASTvariable vari = null;
+                if (a as GetValByAdress != null) vari = ((a as GetValByAdress).from as ASTvariable);
+                if (a as Define != null) vari = (a as Define).var;
+
+                if (vari != null && vari.everUsed > 0)// && !vari.wasLoaded)
+                {
+                    LLVM.varisReload.Add(vari);
+                    vari.reloadedTimes++;
+                    LLVM.CommandOrderQueueCode += String.Format("{0}{1} = load {2}, {3} {4}\n", MISC.tabsLLVM(depth), vari.ToLLVM(), vari.returnTypes().ToLLVM(), vari.returnTypes().TypeOfPointerToThis().ToLLVM(), MISC.RemoveCall(vari.ToLLVM()));
+                    vari.reloadedTimes--;
+                }
+            }
             if (a as GetValByAdress != null)
             {
-                (a as GetValByAdress).LLVM_isLeftOperand = true;
-                string number = b.ToLLVM(depth), add_last = a.ToLLVM(depth);
-                LLVM.AddToCode(b.returnTypes().ToLLVM() + " " +number +","+ add_last);
-                return "";
+                // variable? from
+                ASTvariable vari = ((a as GetValByAdress).from as ASTvariable);
+                // NOT случай, когда переменная просто проходная- не глобальная, не параметр, и обращение идет прямо на неё
+                if (!(vari != null /* && !vari.everPointed*/ && vari.adress.typ != VAT.Parameter))
+                {
+                    (a as GetValByAdress).LLVM_isLeftOperand = true;
+                    string number = b.ToLLVM(depth), add_last = a.ToLLVM(depth);
+                    LLVM.AddToCode(b.returnTypes().ToLLVM() + " " + number + "," + add_last);
+                    return "";
+                }
             }
-            return MISC.tabsLLVM(depth)
-                + a.ToLLVM(depth)
-                + " = "
-                + ((b as ASTvalue != null) ? b.returnTypes().ToLLVM() + " " : "")
-                + b.ToLLVM(depth);
+           
+            return String.Format("{0}store {3} {4}, {1} {2}", MISC.tabsLLVM(depth), a.returnTypes().TypeOfPointerToThis().ToLLVM(), MISC.RemoveCall(a.ToLLVM(depth)), b.returnTypes().ToLLVM(), b.ToLLVM(depth));
         }
         public string LLVMGLOBAL(int depth)
         {
@@ -77,6 +96,18 @@ namespace Compilat
                 + " = global "
                 + ((b as ASTvalue != null) ? b.returnTypes().ToLLVM() + " " : "")
                 + b.ToLLVM(depth);
+        }
+        public override void Trace(int depth)
+        {
+            Console.Write(MISC.tabs(depth));
+            if (!defining)
+                MISC.ConsoleWrite(operationString, ConsoleColor.Yellow);
+            else
+                MISC.ConsoleWrite(operationString + "", ConsoleColor.Red);
+            MISC.ConsoleWriteLine("   " + returnType.ToString(), ConsoleColor.DarkGreen);
+            a.Trace(depth + 1);
+            MISC.finish = true;
+            b.Trace(depth + 1);
         }
     }
 

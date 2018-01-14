@@ -11,11 +11,12 @@ namespace Compilat
         // there can be any ASI doing one by one
         protected List<ICommand> commands;
 
-        public bool TryTraceLLVMGlobalVars (){
+        public bool TryTraceLLVMGlobalVars()
+        {
             try
             {
                 for (int i = 0; i < commands.Count; i++)
-                    LLVM.AddToCode((commands[i] as Assum).LLVMGLOBAL(0) + ", allign "+MISC.SyzeOf((commands[i] as Assum).returnTypes())+"\n");
+                    LLVM.AddToCode((commands[i] as Assum).LLVMGLOBAL(0) + ", align " + MISC.SyzeOf((commands[i] as Assum).returnTypes()) + "\n");
                 return true;
             }
             catch (Exception e)
@@ -344,9 +345,22 @@ namespace Compilat
             string res = "";
             for (int i = 0; i < commands.Count; i++)
             {
-                string add = String.Format("{0}{1}", commands[i].ToLLVM(depth),"\n");
-                if (!(commands[i] as Summ != null || commands[i] as Diff != null || commands[i] as Qout != null || commands[i] as Mult != null))
+                string add = String.Format("{0}{1}", commands[i].ToLLVM(depth), "\n");
+                if (!(//commands[i] as Summ != null || commands[i] as Diff != null || 
+                    commands[i] as Define != null
+                    ))
+                //|| (commands[i] as ASTFunctionCall != null)))
+                {
                     LLVM.AddToCode(add);
+
+                    if (LLVM.CommandOrderQueueCode != "")
+                    {
+                        LLVM.AddToCode(LLVM.CommandOrderQueueCode); LLVM.CommandOrderQueueCode = ""; 
+                        for (int v = 0; v < LLVM.varisReload.Count; v++)
+                            LLVM.varisReload[v].reloadedTimes++;
+                        LLVM.varisReload = new List<ASTvariable>();
+                    }
+                }
             }
             return res;
         }

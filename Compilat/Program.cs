@@ -15,6 +15,7 @@ namespace Compilat
             Console.SetWindowPosition(0, 0);
 
             FLoader fl = new FLoader("codes", "modules");
+            fl.ReselectFolders();
             fl.ShowIO();
         }
     }

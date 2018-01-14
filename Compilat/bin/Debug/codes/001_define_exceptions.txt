@@ -1,0 +1,16 @@
+
+int main (){
+	
+	// same name
+	int A = 10;
+	int A = 11;
+	
+	// only 1 symbol
+	char T = 'abc';
+	
+	// not string
+	char C = "c";
+	
+	// without a convertion is incorrect
+	string S = 's'
+}

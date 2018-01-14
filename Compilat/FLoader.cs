@@ -30,6 +30,25 @@ namespace Compilat
                 codeNames[i] = files[i].Name.Remove(files[i].Name.LastIndexOf('.'));
 
         }
+        public void ReselectFolders()
+        {
+            Console.WriteLine("Write adress of folder with code ...\n" + codeFolder);
+            string S = Console.ReadLine();
+            if (S.Length > 0)
+                codeFolder = S.Replace('/','\\');
+            Console.WriteLine("Write adress of folder with modules ...\n" + moduleFolder);
+            string S2 = Console.ReadLine();
+            if (S.Length > 0)
+                moduleFolder = S2.Replace('/', '\\');
+
+            directory = new DirectoryInfo(@"" + codeFolder);
+            files = directory.GetFiles("*.txt");
+            codeNames = new string[files.Length];
+            currentCodeName = 0;
+
+            for (int i = 0; i < files.Length; i++)
+                codeNames[i] = files[i].Name.Remove(files[i].Name.LastIndexOf('.'));
+        }
 
         string SelectIO()
         {
@@ -153,7 +172,7 @@ namespace Compilat
 
                         while (true)
                         {
-                            
+
                             Thread.Sleep(5000);
                             changed = CatFileAndDetectChanges(codeFolder, command, ref fileContent);
                             if (changed)

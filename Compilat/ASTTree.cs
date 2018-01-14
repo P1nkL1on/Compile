@@ -16,15 +16,17 @@ namespace Compilat
         public static CommandOrder GlobalVars = new CommandOrder();
 
         public static ConsoleColor clr = ConsoleColor.Black;
-
+        static List<int> generatedTime = new List<int>();
+        static DateTime data;
 
         public void TraceLLVM()
         {
-
             MISC.ConsoleWriteLine("\nLLVM\n\n", ConsoleColor.Magenta);
             ToLLVM(true);
-            string types = "i1_i32_i64_i16_f32_f64_void_i8",
-                   opers = "add_mul_sub_sdiv_fdiv_fadd_fmul_fsub_br_eq_ne_sgt_sge_slt_sle_or_and_icmp_define_declare_tail_call_global_constant";
+            string seps = " *,\n",
+                   types = "i1_i32_i64_i16_f32_f64_void_i8_double_",
+                   opers = "add_mul_sub_sdiv_fdiv_fadd_fmul_fsub_br_eq_ne_sgt_sge_slt_sle_or_and_icmp_",
+                   vars = "label_define_declare_tail_call_global_constant_getelementptr_load_align_ret_store_alloca_private_";
             string code = LLVM.CurrentCode;
             for (int i = 0; i < code.Length; i++)
             {
@@ -39,19 +41,25 @@ namespace Compilat
                     if (code[i] == '%')
                     {
                         Console.ForegroundColor = ConsoleColor.Green;
-                        if (code.Length > i - 6 && code.Substring(i - 6).IndexOf("label") == 0)
+                        if (code.Length > i - 6 && i >= 6 && code.Substring(i - 6).IndexOf("label") == 0)
                             Console.ForegroundColor = ConsoleColor.DarkMagenta;
                     }
                     if (code[i] == '@') Console.ForegroundColor = ConsoleColor.Red;
 
 
-                    string nowword = (code.Substring(i).IndexOf(" ") < 0) ? "" : code.Substring(i).Remove(code.Substring(i).IndexOf(" "));
-                    if (nowword.Length > 1)
+                    for (int jj = 0; jj < seps.Length; jj++)
                     {
-                        if (types.IndexOf(nowword) >= 0)
-                            Console.ForegroundColor = ConsoleColor.DarkGreen;
-                        if (opers.IndexOf(nowword) >= 0)
-                            Console.ForegroundColor = ConsoleColor.Yellow;
+                        string nowword = (code.Substring(i).IndexOf(seps[jj]) < 0) ? "" : code.Substring(i).Remove(code.Substring(i).IndexOf(seps[jj]));
+                        if (nowword.Length > 1)
+                        {
+                            nowword += "_";
+                            if (opers.IndexOf(nowword) >= 0)
+                                Console.ForegroundColor = ConsoleColor.Yellow;
+                            if (vars.IndexOf(nowword) >= 0)
+                                Console.ForegroundColor = ConsoleColor.Magenta;
+                            if (types.IndexOf(nowword) >= 0)
+                                Console.ForegroundColor = ConsoleColor.DarkGreen;
+                        }
                     }
                 }
                 else
@@ -65,18 +73,19 @@ namespace Compilat
         }
         public String ToLLVM(bool writeToFile)
         {
+            data = DateTime.Now;
             if (GlobalVars.CommandCount != 0)
                 GlobalVars.TryTraceLLVMGlobalVars();
             for (int i = 0; i < funcs.Count; i++)
                 if (funcs[i] != null)
                 {
                     MISC.LLVMtmpNumber = 0;
-                    LLVM.AddToCode(funcs[i].ToLLVM(0) + "\n\n");
+                    LLVM.AddToCode(funcs[i].ToLLVM(i) + "\n\n");
                     LLVM.AddToCode("\n");
                 }
             string pathLLVM = path.Remove(path.LastIndexOf('.')) + "LLVM.ll";
             System.IO.File.WriteAllText(pathLLVM, LLVM.CurrentCode);
-
+            generatedTime.Add((DateTime.Now - data).Seconds * 1000 + (DateTime.Now - data).Milliseconds);
             return LLVM.CurrentCode;
         }
         public void Trace()
@@ -88,12 +97,10 @@ namespace Compilat
 
             Console.WriteLine(String.Format("Path:\n\t{0}\nCode:\n\n{1}", path, original));
 
-
-
-            Console.WriteLine("\nTokens:");
-            for (int i = 0; i < tokens.Count; i++)
-                tokens[i].TraceMore(0);
-            Console.WriteLine("\n\nVariables");
+            //Console.WriteLine("\nTokens:");
+            //for (int i = 0; i < tokens.Count; i++)
+            //    tokens[i].TraceMore(0);
+            Console.WriteLine("\n\nVariables\n local\tname\t\ttype\t\tused\tadress");
             for (int i = 0; i < variables.Count; i++)
                 variables[i].TraceMore(0);
             if (GlobalVars.CommandCount > 0)
@@ -118,7 +125,12 @@ namespace Compilat
                     funcs[i].Trace(0);
                 }
             //
-            TraceLLVM(); return;
+            TraceLLVM();
+            Console.ResetColor();
+            int allign = 6;
+            Console.WriteLine(String.Format("\nTime spend, seconds:\n    {0} - text parsed and trimmed\n    {1} - AST tree builded\n    {2} - LLVM IR generated\n"
+                , (generatedTime[0] / 1000.0).ToString().PadRight(allign), (generatedTime[1] / 1000.0).ToString().PadRight(allign), (generatedTime[2] / 1000.0).ToString().PadRight(allign)));
+            return;
         }
 
         static List<char> brStack = new List<char>();
@@ -140,9 +152,12 @@ namespace Compilat
             string sTrim = "";
             ClearTree();
 
+            data = DateTime.Now;
+
             sTrim = FuncTrimmer(s); // remove last ^
             original = s;
             string[] funcParseMaterial = sTrim.Split('^');
+            generatedTime.Add((DateTime.Now - data).Seconds * 1000 + (DateTime.Now - data).Milliseconds); data = DateTime.Now;
             try
             {
                 for (int i = 0; i < funcParseMaterial.Length; i++)
@@ -164,25 +179,39 @@ namespace Compilat
                         if (funcs[i] != null && funcs[j] != null)
                             if (MISC.CompareFunctionSignature(funcs[i], funcs[j]))
                             { funcs[i] = funcs[j]; funcs[j] = null; }
+                
             }
             catch (Exception e)
             {
                 MISC.ConsoleWriteLine("ERROR:\n" + e.Message, ConsoleColor.Red);
                 ClearTree();
                 return;
-            }
+            } 
+            generatedTime.Add((DateTime.Now - data).Seconds * 1000 + (DateTime.Now - data).Milliseconds);
         }
 
         static string FuncTrimmer(string s)
         {
             string[] deleteWords = new string[] { "const " };
+            //string[] deleteWordsPrefixes = new string[] { "__" };
+            //string[] deleteLinesPrefixes = new string[] { "#", "extern" };
             string res = "";
             int brL = 0, isStr = 0, isCmt = 0, isChar = 0;
 
+            s += " \n";
             for (int i = 0; i < s.Length; i++)
             {
-                if (s.Substring(i).IndexOf(deleteWords[0]) == 0)
-                { i += deleteWords[0].Length - 1; continue; }
+                string subs = s.Substring(i);
+                for (int w = 0; w < deleteWords.Length; w++)
+                    if (subs.IndexOf(deleteWords[w]) == 0)
+                    { i += deleteWords[0].Length - 1; continue; }
+                //for (int w = 0; w < deleteWordsPrefixes.Length; w++)
+                //    if (subs.IndexOf(deleteWordsPrefixes[w]) == 0)
+                //    { i += subs.IndexOf(' '); continue; }
+                //for (int w = 0; w < deleteWordsPrefixes.Length; w++)
+                //    if (subs.IndexOf(deleteLinesPrefixes[w]) == 0)
+                //    { i += subs.IndexOf('\n'); continue; }
+
                 string add = s[i] + "";
                 if (isStr == 0 && isChar == 0 && isCmt == 0)
                 {
@@ -295,7 +324,7 @@ namespace Compilat
                 case VT.Cstring:
                     return "i8*" + pointer;
                 default:
-                    return "???" + pointer;;
+                    return "???" + pointer; ;
             }
         }
 
@@ -369,9 +398,6 @@ namespace Compilat
             return !(obj1 == obj2);
         }
     }
-
-
-
 
     public struct TypeConvertion
     {

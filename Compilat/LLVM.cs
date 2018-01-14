@@ -59,5 +59,7 @@ namespace Compilat
         {
             return String.Format("load {0}, {1}, align {2}", vtLoad.ToLLVM(), from, MISC.SyzeOf(vtLoad));
         }
+        public static string CommandOrderQueueCode = "";
+        public static List<ASTvariable> varisReload = new List<ASTvariable>();
     }
 }

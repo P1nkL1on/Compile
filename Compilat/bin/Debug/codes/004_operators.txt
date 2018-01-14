@@ -1,0 +1,25 @@
+
+char main (int argc, char** args){
+	
+	int X = 10; char res = 'u'; int res_value = X;
+	if (X > 5){
+		res = 'y';
+		res_value *= X;
+	} else {
+		res = 'n';
+		res_value /= X;
+	}
+	
+	
+	
+	if (res == 'n')
+		res_value = 0;
+	else
+		res_value ++;
+	res_value --;	
+	
+	
+	if (res == 'y')
+		res = 'p' ;
+	return res;
+}

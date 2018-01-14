@@ -1,0 +1,28 @@
+
+int foo (int A, char C){
+	return A + A;
+}
+void D (){
+
+}
+int main (int argc, char** args){
+	
+	// try to use void value
+	int A = D();
+	
+	// incorrect parameter number
+	foo(1, 'c', 'd');
+	foo (1);
+	
+	return 0;
+}
+
+// incorrect signature
+int func (x,y,z){
+
+}
+
+// no return
+double Whoops (){
+	int X = 10;
+}

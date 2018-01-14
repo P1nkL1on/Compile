@@ -1,0 +1,11 @@
+
+int main (){
+	int Xint = 10;
+	double Xdouble = 15.0;
+	int A;
+	int a,b,c,d,e;
+	double D = 22.0, F = 1.0, E, G, H = -10.0, K = 10.0 + 20.0 + 30.2;
+	char _c = 'a', _c1 = 'b', _c2 = 'c';
+	string S = "okay", S2 = "here we go", S3 = "";
+	bool TR = true, FL = false
+}

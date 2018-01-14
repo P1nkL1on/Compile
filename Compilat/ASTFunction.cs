@@ -18,6 +18,7 @@ namespace Compilat
         public bool declareOnly;
         //
         public int infiniteParamsAfter;
+        public int LLVMnumber = -1;
         //
         public int ParamCount { get { return input.Count; } }
         static Define GetDefineFromString (string s)
@@ -140,17 +141,19 @@ namespace Compilat
         public virtual string ToLLVM(int depth)
         {
             string param = "";
+            int funcNumber = depth; depth = 0;
             for (int i = 0; i < input.Count; i++)
                 param += input[i].returnTypes().ToLLVM() + ((!declareOnly) ? " %" + input[i].varName : "") + ((i < input.Count - 1) ? ", " : "");
             if (infiniteParamsAfter >= 0)
                 param += ", ...";
+            LLVM.AddToCode(String.Format("; {0} {1}\n", getName, getArgsString));
             if (!declareOnly)
             {
-                LLVM.AddToCode(String.Format("{0}define {1} @{2}({3})", MISC.tabsLLVM(depth), retType.ToLLVM(), getName, param) + "{\n" /*+ MISC.tabsLLVM(depth) + "entry:\n"*/);//  + code + "}";
+                LLVM.AddToCode(String.Format("{0}define {1} @{2}({3}) #{4} ", MISC.tabsLLVM(depth), retType.ToLLVM(), getName, param, funcNumber) + "{\n" /*+ MISC.tabsLLVM(depth) + "entry:\n"*/);//  + code + "}";
                 LLVM.AddToCode(actions.ToLLVM(depth + 1));
                 return MISC.tabsLLVM(depth) + "}";
             }
-            return String.Format("{0}declare {1} @{2}({3})", MISC.tabsLLVM(depth), retType.ToLLVM(), getName, param);
+            return String.Format("{0}declare {1} @{2}({3}) #{4}", MISC.tabsLLVM(depth), retType.ToLLVM(), getName, param, funcNumber);
         }
         //
         public string getName

@@ -1,0 +1,50 @@
+
+int Declared (int a1, int a2, double d1);
+
+void DeclaredOnly (double * D);
+
+int foo (int A, char C){
+	return A + A;
+}
+
+int Mul (int X, int Y){
+	int res = X * Y;
+	return res;
+}
+
+double GiveMeTen (){
+	return 10.0;
+}
+
+void DoNothing (){
+}
+
+// with doubles
+void OnlyArgs (char c, int b, double D, double E){
+
+}
+// with ints
+void OnlyArgs (char c, int b, int D, int E){
+
+}
+
+int main (int argc, char** args){
+	
+	foo(1,'2');
+	int foores = foo(3,'4');
+	
+	foores = Mul(3,6);
+	
+	double ten = GiveMeTen();
+	
+	DoNothing();
+	
+	OnlyArgs('f', 1 + 2, 4.6 - 233.333, 1.2 * 20.0);
+	OnlyArgs('c', 10, 15.0, 23.3);
+	
+	return 0;
+}
+
+int Declared (int a1, int a2, double d1){
+	return a1 + a2 * a1;
+}

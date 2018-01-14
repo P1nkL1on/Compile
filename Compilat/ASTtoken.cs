@@ -24,6 +24,7 @@ namespace Compilat
         Object data;
         ConsoleColor clr;
         string LLVMname;
+        string array_type;
 
         public ASTvalue(ValueType vt, Object data)
         {
@@ -61,7 +62,7 @@ namespace Compilat
                 if (s.IndexOf('\'') == 0 && s.LastIndexOf('\'') == s.Length - 1)
                 {
                     if (s.Length == 3 || (s.Length == 4 && s[1] == '\\'))
-                    { this.valType = new ValueType(VT.Cchar); this.data = (object)(s[1]); LLVMname = s[1]+"";  clr = ConsoleColor.DarkCyan; }
+                    { this.valType = new ValueType(VT.Cchar); this.data = (object)(s[1]); LLVMname = s[1] + ""; clr = ConsoleColor.DarkCyan; }
                     else
                     { throw new Exception("Char can not be more than 1 symbol"); }
                 }
@@ -71,6 +72,7 @@ namespace Compilat
                     if (s.IndexOf('\"') == 0 && s.LastIndexOf('\"') == s.Length - 1)
                     {
                         this.valType = new ValueType(VT.Cstring);
+
                         string STR = s.Substring(1, s.Length - 2);
                         this.data = (object)(STR);
                         clr = ConsoleColor.DarkCyan;
@@ -81,7 +83,8 @@ namespace Compilat
                         for (int sk = 0; sk < STRLLVM.Length - 1; sk++)
                             if (STRLLVM[sk] == '\\')
                                 leng -= 2;
-                        LLVM.AddToCode(String.Format("@str{0} = pritvate unnamed_addr constant [{1} x i8] c\"{2}\"\n", LLVM.globalVars, leng, STRLLVM));
+                        LLVM.AddToCode(String.Format("@str{0} = private unnamed_addr constant [{1} x i8] c\"{2}\"\n", LLVM.globalVars, leng, STRLLVM));
+                        this.array_type = "[" + leng + " x i8]";
                         LLVMname = "str" + LLVM.globalVars;
                         LLVM.globalVars++;
                     }
@@ -107,6 +110,8 @@ namespace Compilat
                                 throw new Exception("Used a variable \"" + varName + "\", that was never defined in this context!");
                             else
                             {
+                                if (!calledFromDefined)
+                                    foundedVar.everUsed++;
                                 this.valType = foundedVar.getValueType;
                                 throw new Exception("GetAddr_" + found);
                             }
@@ -118,7 +123,7 @@ namespace Compilat
         }
         public virtual string ToLLVM(int depth)
         {
-            
+
             //return String.Format("{0}",
             //    (returnTypes() == new ValueType(VT.Cdouble) ?
             //    (data.ToString() + ((data.ToString().IndexOf(",") < 0) ? "," : "")).Replace(',', '.').PadRight(6, '0')    // недостающие нули в записи с плавающей запятой
@@ -130,11 +135,11 @@ namespace Compilat
                 case VT.Cint:
                     return data.ToString();
                 case VT.Cstring:
-                    return "@" + LLVMname;
+                    return String.Format("getelementptr ({0}, {0}* @{1}, i64 0, i64 0)", array_type, LLVMname);//"@" + LLVMname;
                 case VT.Cchar:
-                    return ((int)(LLVMname[0] )).ToString();
+                    return ((int)(LLVMname[0])).ToString();
                 case VT.Cboolean:
-                    return (LLVMname == "true")? "1" : "0";
+                    return (LLVMname == "true") ? "1" : "0";
                 default:
                     return "???";
             }
@@ -228,20 +233,24 @@ namespace Compilat
         ValueType valType;
         public string name;
 
-        AdressType adress;
+        public AdressType adress;
         string localSpace;
 
+        public int everUsed;
+        public int reloadedTimes;
 
         public ASTvariable()
         {
-
+            reloadedTimes = 0;
             this.valType = new ValueType(VT.Cunknown);
             this.name = "-";
             this.adress = new AdressType(-1, VAT.Unknown);
             this.localSpace = string.Join("/", MISC.nowParsing.ToArray());
+            everUsed = 0;
         }
         public ASTvariable(ValueType vt, string name, int level, AdressType adress)
         {
+            reloadedTimes = 0;
             this.valType = vt;
             this.name = name;
             // check variable name with function collision
@@ -251,6 +260,7 @@ namespace Compilat
             //
             this.adress = adress;//ASTTree.variables.Count;
             this.localSpace = string.Join("/", MISC.nowParsing.ToArray());
+            everUsed = 0;
         }
         public string ToLLVM(int depth)
         {
@@ -262,17 +272,17 @@ namespace Compilat
             Console.Write(MISC.tabs(depth));
             MISC.ConsoleWrite(pointerMuch(valType.pointerLevel), ConsoleColor.Red);
             MISC.ConsoleWrite(name, ConsoleColor.Green);
-            MISC.ConsoleWriteLine("\t" + getValueType.ToString().Substring(1) + "" + adress, ConsoleColor.Red);
+            MISC.ConsoleWriteLine(" (" + getValueType.ToString().Substring(1) + "" + adress + ")", ConsoleColor.DarkGreen);
 
         }
         public virtual string ToLLVM()
         {
-            return ((adress.typ == VAT.Global)? "@" : "%") + name;
+            return ((adress.typ == VAT.Global) ? "@" : "%") + ((reloadedTimes > 0) ? "$" + reloadedTimes : "") + name;
         }
         public virtual void TraceMore(int depth)
         {
-            MISC.ConsoleWrite(String.Format("{2}\t{0}\t\t{1}\t\t",
-                pointerMuch(valType.pointerLevel) + name, getValueType.ToString().Substring(1), adress), ConsoleColor.DarkGreen);
+            MISC.ConsoleWrite(String.Format("{2}\t{0}\t\t{1}\t\t{3}\t",
+                pointerMuch(valType.pointerLevel) + name, getValueType.ToString().Substring(1), adress, everUsed), ConsoleColor.DarkGreen);
             MISC.ConsoleWriteLine(localSpace, ConsoleColor.DarkMagenta);
         }
 

@@ -1,0 +1,10 @@
+
+int main (){
+	int var1;
+	int va2 = 2;
+	var1 = 100; va2 = 3; va2 = 3 + 4; va2 = var1 + var1 * var1;
+	
+	
+	int summ = 10 + 20, x = 1, y = 15, xy = x + y, XY = x * y, res = x / y;
+	double ref = 10.0 / 20.0 + 1.0 * 12.33 / 33.4;
+}
