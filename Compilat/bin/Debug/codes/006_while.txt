@@ -2,7 +2,7 @@
 int main (int argc, char** args){
 	int i = 10;
 	bool apaca = true;
-	while (i > 0){
+	while ((i > 0) && (i < 100)){
 		printf("hi mark! x %i \n", i);
 		i -= 3;
 	}

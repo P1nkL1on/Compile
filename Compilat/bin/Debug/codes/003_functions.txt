@@ -20,7 +20,7 @@ void DoNothing (){
 }
 
 // with doubles
-void OnlyArgs (char c, int b, double D, double E){
+void OnlyArgs (char c, int b, char D, double E){
 
 }
 // with ints
@@ -39,8 +39,9 @@ int main (int argc, char** args){
 	
 	DoNothing();
 	
-	OnlyArgs('f', 1 + 2, 4.6 - 233.333, 1.2 * 20.0);
-	OnlyArgs('c', 10, 15.0, 23.3);
+	OnlyArgs('c', 10, 1, 2);
+	OnlyArgs('f', 1 + 2, 'f', 1.2 * 20.0);
+	OnlyArgs('c', 10, 'k', 23.3);
 	
 	return 0;
 }

@@ -7,7 +7,7 @@ int main (int argc, char** args){
 	int**** xpppp = &xppp;
 	//
 	
-	//X = 11;
+	X = X + 11;
 	//*Xp = 13;
 	****xpppp = 14;
 	

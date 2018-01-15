@@ -1,8 +1,8 @@
-@str0 = private unnamed_addr constant [5 x i8] c"okay\00"
-@str1 = private unnamed_addr constant [11 x i8] c"here we go\00"
-@str2 = private unnamed_addr constant [1 x i8] c"\00"
+@str16 = private unnamed_addr constant [5 x i8] c"okay\00"
+@str17 = private unnamed_addr constant [11 x i8] c"here we go\00"
+@str18 = private unnamed_addr constant [1 x i8] c"\00"
 ; main int (  )
-define i32 @main() #0 {
+define i32 @$0main() #0 {
   %_0Xint = alloca i32
   store i32 10, i32* %_0Xint
   %_1Xdouble = alloca double
@@ -32,11 +32,11 @@ define i32 @main() #0 {
   %_16_c2 = alloca i8
   store i8 99, i8* %_16_c2
   %_17S = alloca i8*
-  store i8* getelementptr ([5 x i8], [5 x i8]* @str0, i64 0, i64 0), i8** %_17S
+  store i8* getelementptr ([5 x i8], [5 x i8]* @str16, i64 0, i64 0), i8** %_17S
   %_18S2 = alloca i8*
-  store i8* getelementptr ([11 x i8], [11 x i8]* @str1, i64 0, i64 0), i8** %_18S2
+  store i8* getelementptr ([11 x i8], [11 x i8]* @str17, i64 0, i64 0), i8** %_18S2
   %_19S3 = alloca i8*
-  store i8* getelementptr ([1 x i8], [1 x i8]* @str2, i64 0, i64 0), i8** %_19S3
+  store i8* getelementptr ([1 x i8], [1 x i8]* @str18, i64 0, i64 0), i8** %_19S3
   %_20TR = alloca i1
   store i1 1, i1* %_20TR
   %_21FL = alloca i1

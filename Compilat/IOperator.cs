@@ -92,8 +92,7 @@ namespace Compilat
             LLVM.AddToCode(";If\n");
             condition.CallFromIf = true;
             string condLine = condition.getTrueEqual().ToLLVM(depth);
-            LLVM.AddToCode(String.Format("{0}%cond{1} = icmp {2}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, condLine));
-            LLVM.AddToCode(String.Format("{0}br i1 %cond{1}, label %Ifthen{1}, label %{2}{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, (noElse) ? "Ifcont" : "Ifelse"));
+            LLVM.AddToCode(String.Format("{0}br i1 {3}, label %Ifthen{1}, label %{2}{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber,( (noElse) ? "Ifcont" : "Ifelse"), condLine));
             LLVM.AddToCode(String.Format("{0}Ifthen{1}:\n", MISC.tabsLLVM(depth - 1), GlobalOperatorNumber));
             LLVM.AddToCode(actions[0].ToLLVM(depth));
             LLVM.AddToCode(String.Format("{0}br label %Ifcont{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber));

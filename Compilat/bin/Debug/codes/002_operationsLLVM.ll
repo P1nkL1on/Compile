@@ -1,5 +1,5 @@
 ; main int (  )
-define i32 @main() #0 {
+define i32 @$0main() #0 {
   %_0var1 = alloca i32
   %_1va2 = alloca i32
   store i32 2, i32* %_1va2

@@ -1,11 +1,10 @@
 ; main int (  )
-define i32 @main() #0 {
+define i32 @$0main() #0 {
 ;For
   br label %Forcond1
 Forcond1:
   %tmp1 = icmp eq i1 1, 1
-  %cond1 = icmp %tmp1
-  br i1 %cond1, label %Foraction1, label %Forcont1
+  br i1 %tmp1, label %Foraction1, label %Forcont1
 Foraction1:
   br label %Forcond1
 Forcont1:
@@ -16,13 +15,11 @@ Forcont1:
   br label %Forcond2
 Forcond2:
   %$2_0i = load i32, i32* %_0i
-  %tmp3 = icmp slt i32 %$2_0i, 10
-  %tmp2 = icmp eq i1 %tmp3, 1
-  %cond2 = icmp %tmp2
-  br i1 %cond2, label %Foraction2, label %Forcont2
+  %tmp2 = icmp slt i32 %$2_0i, 10
+  br i1 %tmp2, label %Foraction2, label %Forcont2
 Foraction2:
-  %tmp4 = add i32 1, %$2_0i
-  store i32 %tmp4, i32* %_0i
+  %tmp3 = add i32 1, %$2_0i
+  store i32 %tmp3, i32* %_0i
   %$3_0i = load i32, i32* %_0i
   br label %Forcond2
 Forcont2:

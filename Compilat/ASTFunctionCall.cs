@@ -120,13 +120,13 @@ namespace Compilat
                 customLLVMtype += " (" + ASTTree.funcs[functionCallNumber].returnListLLVMCall()+")";
             if (returnTypes().rootType != VT.Cvoid)
             {
-                LLVM.AddToCode(String.Format("{5}%tmp{4} = call {0} @{1}({2})\n", customLLVMtype, ASTTree.funcs[functionCallNumber].getName,
+                LLVM.AddToCode(String.Format("{5}%tmp{4} = call {0} @{1}({2})\n", customLLVMtype, ASTTree.funcs[functionCallNumber].getNameLLVM,
                     param, MISC.tabsLLVM(depth), ++MISC.LLVMtmpNumber, MISC.tabsLLVM(depth)));
                 return "%tmp" + MISC.LLVMtmpNumber;
             }
             else
             {
-                LLVM.AddToCode(String.Format("{4}tail call {0} @{1}({2})\n", customLLVMtype, ASTTree.funcs[functionCallNumber].getName,
+                LLVM.AddToCode(String.Format("{4}tail call {0} @{1}({2})\n", customLLVMtype, ASTTree.funcs[functionCallNumber].getNameLLVM,
                     param, MISC.tabsLLVM(depth),MISC.tabsLLVM(depth)));
                 return "";
             }

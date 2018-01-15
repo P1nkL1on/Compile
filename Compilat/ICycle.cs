@@ -28,7 +28,6 @@ namespace Compilat
             iterateVars = new List<ASTvariable>();
             for (int i = 0; i < found.Count; i++)
                 if (iterateVars.IndexOf(found[i]) < 0) iterateVars.Add(found[i]);
-            int X = 0;
         }
     }
 
@@ -115,8 +114,7 @@ namespace Compilat
                     LLVM.AddToCode(String.Format("{0}{1} = load {2}, {3} {4}\n", MISC.tabsLLVM(depth), vari.ToLLVM(), vari.returnTypes().ToLLVM(), vari.returnTypes().TypeOfPointerToThis().ToLLVM(), MISC.RemoveCall(vari.ToLLVM())));
                 }
                 string condLine = condition.getTrueEqual().ToLLVM(depth);
-                LLVM.AddToCode(String.Format("{0}%cond{1} = icmp {2}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, condLine));
-                LLVM.AddToCode(String.Format("{0}br i1 %cond{1}, label %{2}action{1}, label %{2}cont{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, type));
+                LLVM.AddToCode(String.Format("{0}br i1 {3}, label %{2}action{1}, label %{2}cont{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, type, condLine));
 
                 LLVM.AddToCode(String.Format("{0}{2}action{1}:\n", MISC.tabsLLVM(depth - 1), GlobalOperatorNumber, type));
                 LLVM.AddToCode(actions.ToLLVM(depth));
@@ -132,8 +130,7 @@ namespace Compilat
                 LLVM.AddToCode(String.Format("{0}br label %{2}cond{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, type));
                 LLVM.AddToCode(String.Format("{0}{2}cond{1}:\n", MISC.tabsLLVM(depth - 1), GlobalOperatorNumber, type));
                 string condLine = condition.getTrueEqual().ToLLVM(depth);
-                LLVM.AddToCode(String.Format("{0}%cond{1} = icmp {2}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, condLine));
-                LLVM.AddToCode(String.Format("{0}br i1 %cond{1}, label %{2}action{1}, label %{2}cont{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, type));
+                LLVM.AddToCode(String.Format("{0}br i1 {3}, label %{2}action{1}, label %{2}cont{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, type, condLine));
 
                 LLVM.AddToCode(String.Format("{0}br label %{2}cond{1}\n", MISC.tabsLLVM(depth), GlobalOperatorNumber, type));
                 LLVM.AddToCode(String.Format("{0}{2}cont{1}:", MISC.tabsLLVM(depth - 1), GlobalOperatorNumber, type));

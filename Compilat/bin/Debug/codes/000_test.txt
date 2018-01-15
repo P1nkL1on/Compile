@@ -3,6 +3,7 @@ int mult (int a, int* b){
 }
 
 int main (){
-	
+	bool t = true;
+	t = 100;
 	return 0;
 }

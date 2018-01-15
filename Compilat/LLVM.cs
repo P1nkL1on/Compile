@@ -71,7 +71,7 @@ namespace Compilat
         }
         public static string Load(ValueType vtLoad, string from)
         {
-            return String.Format("load {0}, {1}, align {2}", vtLoad.ToLLVM(), from, MISC.SyzeOf(vtLoad));
+            return String.Format("load {0}, {1}, align {2}", vtLoad.TypeOfPointerToThis().ToLLVM(), from, MISC.SyzeOf(vtLoad.TypeOfPointerToThis()));
         }
         public static string CommandOrderQueueCode = "";
         public static List<ASTvariable> varisReload = new List<ASTvariable>();

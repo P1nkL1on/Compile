@@ -135,17 +135,17 @@ namespace Compilat
 
         public IOperation getTrueEqual()
         {
-            return this;
-            //bool notB = false, notA = false;
-            //if (b as ASTvalue != null && (b as ASTvalue).getValueType == new ValueType(VT.Cboolean) && (bool)((b as ASTvalue).getValue) == true)
-            //    notB = true;
-            //if (a as ASTvalue != null && (a as ASTvalue).getValueType == new ValueType(VT.Cboolean) && (bool)((a as ASTvalue).getValue) == true)
-            //    notA = true;
-
-            //if (notA && !notB) return b;
-            //if (notB && !notA) return a;
-
             //return this;
+            bool notB = false, notA = false;
+            if (b as ASTvalue != null && (b as ASTvalue).getValueType == new ValueType(VT.Cboolean) && (bool)((b as ASTvalue).getValue) == true)
+                notB = true;
+            if (a as ASTvalue != null && (a as ASTvalue).getValueType == new ValueType(VT.Cboolean) && (bool)((a as ASTvalue).getValue) == true)
+                notA = true;
+
+            if (notA && !notB) return b;
+            if (notB && !notA) return a;
+
+            return this;
         }
     }
     class Uneq : BinaryOperation
