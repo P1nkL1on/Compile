@@ -12,5 +12,7 @@ int main (){
 	char C = "c";
 	
 	// without a convertion is incorrect
-	string S = 's'
+	string S = 's';
+	
+	return 0;
 }

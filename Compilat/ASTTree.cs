@@ -322,7 +322,7 @@ namespace Compilat
                 case VT.Cint:
                     return "i32" + pointer;
                 case VT.Cdouble:
-                    return "f64" + pointer;
+                    return "double" + pointer;  // f64
                 case VT.Cchar:
                     return "i8" + pointer;
                 case VT.Cboolean:

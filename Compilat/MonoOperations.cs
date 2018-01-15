@@ -278,11 +278,15 @@ namespace Compilat
                 {
                     MISC.LLVMtmpNumber++;
                     int num = MISC.LLVMtmpNumber;
-                    LLVM.AddToCode(MISC.tabsLLVM(depth) + "%tmp" + (num) + " = " + LLVM.ParamToLLVM(depth, "getelementptr", returnTypes(), from, adder));
+                    //LLVM.AddToCode(MISC.tabsLLVM(depth) + "%tmp" + (num) + " = " + LLVM.ParamToLLVM(depth, "getelementptr", returnTypes(), from, adder));
+                    string FROM = from.ToLLVM(depth), ADDER = adder.ToLLVM(depth);
+                    LLVM.AddToCode(String.Format("{0}%tmp{1} = getelementptr {2}, {3} {4}, {5} {6}\n", MISC.tabsLLVM(depth),
+                        num, from.returnTypes().ToLLVM(), from.returnTypes().TypeOfPointerToThis().ToLLVM(), FROM, adder.returnTypes().ToLLVM(), ADDER ));
                     store_or_load_from = "%tmp" + num;
                 }
                 else
                     store_or_load_from = "" + from.ToLLVM(0);
+                
                 MISC.LLVMtmpNumber++;
                 int num2 = MISC.LLVMtmpNumber;
                 if (!LLVM_isLeftOperand)
@@ -292,6 +296,12 @@ namespace Compilat
                 }
                 else
                 {
+                    MISC.LLVMtmpNumber++;
+                    int num12 = MISC.LLVMtmpNumber;
+                    LLVM.AddToCode(String.Format("{0}%tmp{1} = load {2}, {3} {4}\n",
+                        MISC.tabsLLVM(depth), num12, from.returnTypes().ToLLVM(), from.returnTypes().TypeOfPointerToThis().ToLLVM(), store_or_load_from));
+                    store_or_load_from = "%tmp" + num12;
+
                     LLVM_isLeftOperand = false;
                     LLVM.AddToCode(MISC.tabsLLVM(depth) + "store ");
                     return String.Format(" {0} {1}, align {2}", from.returnTypes().ToLLVM(), store_or_load_from, MISC.SyzeOf(returnTypes()));

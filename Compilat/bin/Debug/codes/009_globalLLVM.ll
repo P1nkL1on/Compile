@@ -18,6 +18,7 @@ define i32 @main() #0 {
   %tmp3 = add i32 1, %$3_0x
   store i32 %tmp3, i32* %_0x
   %$4_0x = load i32, i32* %_0x
+  ret i32 0
 }
 
 

@@ -133,7 +133,9 @@ namespace Compilat
             switch (returnTypes().rootType)
             {
                 case VT.Cdouble:
-                    return data.ToString() + ((data.ToString().IndexOf(",") < 0) ? "," : "").Replace(',', '.').PadRight(6, '0');
+                    string res = (data.ToString().Replace(',', '.'));
+                    if (res.IndexOf('.') < 0) res += ".0";
+                    return res;
                 case VT.Cint:
                     return data.ToString();
                 case VT.Cstring:

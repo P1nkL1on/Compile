@@ -7,4 +7,6 @@ int main (){
 	
 	int summ = 10 + 20, x = 1, y = 15, xy = x + y, XY = x * y, res = x / y;
 	double ref = 10.0 / 20.0 + 1.0 * 12.33 / 33.4;
+	
+	return 1;
 }

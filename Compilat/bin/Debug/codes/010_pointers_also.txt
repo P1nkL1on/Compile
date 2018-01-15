@@ -1,0 +1,15 @@
+int main (int argc, char** args){
+	
+	int X = 10;
+	int* Xp = &X;
+	int** xpp = &Xp;
+	int*** xppp = &xpp;
+	int**** xpppp = &xppp;
+	//
+	
+	//X = 11;
+	//*Xp = 13;
+	****xpppp = 14;
+	
+	return 1;
+}

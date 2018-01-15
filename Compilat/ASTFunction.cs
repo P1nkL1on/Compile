@@ -143,7 +143,7 @@ namespace Compilat
             string param = "";
             int funcNumber = depth; depth = 0;
             for (int i = 0; i < input.Count; i++)
-                param += input[i].returnTypes().ToLLVM() + ((!declareOnly) ? " %" + input[i].varName : "") + ((i < input.Count - 1) ? ", " : "");
+                param += input[i].returnTypes().ToLLVM() + ((!declareOnly) ? " " + MISC.RemoveCall(input[i].var.ToLLVM()) : "") + ((i < input.Count - 1) ? ", " : "");
             if (infiniteParamsAfter >= 0)
                 param += ", ...";
             LLVM.AddToCode(String.Format("; {0} {1}\n", getName, getArgsString));
@@ -151,10 +151,16 @@ namespace Compilat
             {
                 LLVM.AddToCode(String.Format("{0}define {1} @{2}({3}) #{4} ", MISC.tabsLLVM(depth), retType.ToLLVM(), getName, param, funcNumber) + "{\n" /*+ MISC.tabsLLVM(depth) + "entry:\n"*/);//  + code + "}";
                 // add used global variables
-                foreach (ASTvariable vari in ASTTree.GlobalVarsVars)
+                List<ASTvariable> addVars = new List<ASTvariable>();
+                //for (int i = 0; i < input.Count; i++)
+                //    addVars.Add(input[i].var);
+                // add param variables
+                addVars.AddRange(ASTTree.GlobalVarsVars);
+                foreach (ASTvariable vari in addVars)
                 {
                     vari.reloadedTimes++;
-                    LLVM.AddToCode(String.Format("{0}{1} = load {2}, {3} {4}\n", MISC.tabsLLVM(depth + 1), vari.ToLLVM(), vari.returnTypes().ToLLVM(), vari.returnTypes().TypeOfPointerToThis().ToLLVM(),"@" +  MISC.RemoveCall(vari.ToLLVM()).Substring(1)));
+                    LLVM.AddToCode(String.Format("{0}{1} = load {2}, {3} {4}\n", MISC.tabsLLVM(depth + 1), vari.ToLLVM(), vari.returnTypes().ToLLVM(), vari.returnTypes().TypeOfPointerToThis().ToLLVM(), 
+                        (vari.adress.typ == VAT.Global)? "@" + MISC.RemoveCall(vari.ToLLVM()).Substring(1) : MISC.RemoveCall(vari.ToLLVM())));
                 }
                 LLVM.AddToCode(actions.ToLLVM(depth + 1));
                 return MISC.tabsLLVM(depth) + "}";

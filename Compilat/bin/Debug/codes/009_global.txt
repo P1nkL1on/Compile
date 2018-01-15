@@ -9,4 +9,6 @@ int main (){
 	x = y;
 	x += CN;
 	x++;
+	
+	return 0;
 }

@@ -6,9 +6,9 @@ define i32 @main() #0 {
   %_1yes = alloca i1
   store i1 1, i1* %_1yes
   %$1_1yes = load i1, i1* %_1yes
-  %_2res = alloca f64
-  store f64 1.00000, f64* %_2res
-  %$1_2res = load f64, f64* %_2res
+  %_2res = alloca double
+  store double 1.0, double* %_2res
+  %$1_2res = load double, double* %_2res
 ;If
   %tmp3 = icmp eq i32 0, 0
   %tmp5 = icmp eq i32 1, 1
@@ -19,10 +19,10 @@ define i32 @main() #0 {
 
   br i1 %cond1, label %Ifthen1, label %Ifcont1
 Ifthen1:
-  %tmp10 = sitofp i32 2 to f64
-  %tmp9 = fmul f64 %$1_2res, %tmp10
-  store f64 %tmp9, f64* %_2res
-  %$2_2res = load f64, f64* %_2res
+  %tmp10 = sitofp i32 2 to double
+  %tmp9 = fmul double %$1_2res, %tmp10
+  store double %tmp9, double* %_2res
+  %$2_2res = load double, double* %_2res
   br label %Ifcont1
 Ifcont1:
   %tmp14 = zext i1 %$1_1yes to i32
