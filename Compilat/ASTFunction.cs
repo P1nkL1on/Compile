@@ -141,7 +141,7 @@ namespace Compilat
         public virtual string ToLLVM(int depth)
         {
             string param = "";
-            //int funcNumber = depth; 
+            int funcNumber = depth; 
             depth = 0;
             for (int i = 0; i < input.Count; i++)
                 param += input[i].returnTypes().ToLLVM() + ((!declareOnly) ? " " + MISC.RemoveCall(input[i].var.ToLLVM()) : "") + ((i < input.Count - 1) ? ", " : "");
@@ -150,7 +150,7 @@ namespace Compilat
             LLVM.AddToCode(String.Format("; {0} {1}\n", getName, getArgsString));
             if (!declareOnly)
             {
-                LLVM.AddToCode(String.Format("{0}define {1} @{2}({3}) #{4} ", MISC.tabsLLVM(depth), retType.ToLLVM(), getNameLLVM, param, LLVMnumber) + "{\n" /*+ MISC.tabsLLVM(depth) + "entry:\n"*/);//  + code + "}";
+                LLVM.AddToCode(String.Format("{0}define {1} @{2}({3}) #{4} ", MISC.tabsLLVM(depth), retType.ToLLVM(), getNameLLVM, param, funcNumber) + "{\n" /*+ MISC.tabsLLVM(depth) + "entry:\n"*/);//  + code + "}";
                 // add used global variables
                 List<ASTvariable> addVars = new List<ASTvariable>();
                 //for (int i = 0; i < input.Count; i++)
@@ -160,13 +160,13 @@ namespace Compilat
                 foreach (ASTvariable vari in addVars)
                 {
                     vari.reloadedTimes++;
-                    LLVM.AddToCode(String.Format("{0}{1} = load {2}, {3} {4}\n", MISC.tabsLLVM(depth + 1), vari.ToLLVM(), vari.returnTypes().ToLLVM(), vari.returnTypes().TypeOfPointerToThis().ToLLVM(), 
-                        (vari.adress.typ == VAT.Global)? "@" + MISC.RemoveCall(vari.ToLLVM()).Substring(1) : MISC.RemoveCall(vari.ToLLVM())));
+                    LLVM.AddToCode(String.Format("{0}{1} = load {2}, {3} {4}\n", MISC.tabsLLVM(depth + 1), vari.ToLLVM(), vari.returnTypes().ToLLVM(), vari.returnTypes().TypeOfPointerToThis().ToLLVM(),
+                        (vari.adress.typ == VAT.Global) ? "@" + MISC.RemoveCall(vari.ToLLVM()).Substring(1) : MISC.RemoveCall(vari.ToLLVM())));
                 }
                 LLVM.AddToCode(actions.ToLLVM(depth + 1));
                 return MISC.tabsLLVM(depth) + "}";
             }
-            return String.Format("{0}declare {1} @{2}({3}) #{4}", MISC.tabsLLVM(depth), retType.ToLLVM(), getNameLLVM, param, LLVMnumber);
+            return String.Format("{0}declare {1} @{2}({3}) #{4}", MISC.tabsLLVM(depth), retType.ToLLVM(), getNameLLVM, param, funcNumber);
         }
         //
         public string getName
@@ -175,7 +175,12 @@ namespace Compilat
         }
         public string getNameLLVM
         {
-            get { return String.Format("${0}{1}", LLVMnumber, name); }
+            get
+            {
+                if (LLVMnumber < 0)
+                    return name;
+                return String.Format("${0}{1}", LLVMnumber, name);
+            }
         }
         public string getArgsString
         {

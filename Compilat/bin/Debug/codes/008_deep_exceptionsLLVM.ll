@@ -1,5 +1,5 @@
 ; main int (  )
-define i32 @$0main() #0 {
+define i32 @main() #0 {
 ;For
   br label %Forcond1
 Forcond1:

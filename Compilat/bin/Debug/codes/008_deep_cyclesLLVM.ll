@@ -1,19 +1,19 @@
-@str9 = private unnamed_addr constant [14 x i8] c" %i x %i   %i\00"
-@str10 = private unnamed_addr constant [4 x i8] c"  \0A\00"
+@str14 = private unnamed_addr constant [14 x i8] c" %i x %i   %i\00"
+@str15 = private unnamed_addr constant [4 x i8] c"  \0A\00"
 ; puts int ( char* )
-declare i32 @$0puts(i8*) #0
+declare i32 @puts(i8*) #0
 
 
 ; putchar int ( char )
-declare i32 @$1putchar(i8) #1
+declare i32 @putchar(i8) #1
 
 
 ; printf int ( char* )
-declare i32 @$2printf(i8*, ...) #2
+declare i32 @printf(i8*, ...) #2
 
 
 ; main int ( int, char** )
-define i32 @$3main(i32 %_0argc, i8** %_1args) #3 {
+define i32 @main(i32 %_0argc, i8** %_1args) #3 {
   %_0LENG = alloca i32
   store i32 10, i32* %_0LENG
   %$1_0LENG = load i32, i32* %_0LENG
@@ -40,11 +40,11 @@ Forcond1:
   br i1 %tmp2, label %Foraction1, label %Forcont1
 Foraction1:
   %tmp3 = mul i32 %$2_1i, %$2_2j
-  %tmp5 = call i32 (i8*, ...) @$2printf(i8* getelementptr ([14 x i8], [14 x i8]* @str9, i64 0, i64 0), i32 %$2_1i, i32 %$2_2j, i32 %tmp3)
+  %tmp5 = call i32 (i8*, ...) @printf(i8* getelementptr ([14 x i8], [14 x i8]* @str14, i64 0, i64 0), i32 %$2_1i, i32 %$2_2j, i32 %tmp3)
   %tmp6 = add i32 1, %$2_2j
   store i32 %tmp6, i32* %_2j
   %$3_2j = load i32, i32* %_2j
-  %tmp8 = call i32 @$0puts(i8* getelementptr ([4 x i8], [4 x i8]* @str10, i64 0, i64 0))
+  %tmp8 = call i32 @puts(i8* getelementptr ([4 x i8], [4 x i8]* @str15, i64 0, i64 0))
   br label %Forcond1
 Forcont1:
   %tmp9 = add i32 1, %$2_1i

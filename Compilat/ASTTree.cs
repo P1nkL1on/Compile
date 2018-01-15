@@ -169,7 +169,11 @@ namespace Compilat
                     if (funcParseMaterial[i].IndexOf("(") >= 0)
                     {
                         funcs.Add(new ASTFunction(funcParseMaterial[i]));
-                        funcs[funcs.Count - 1].LLVMnumber = i;
+
+                        int found = -1;
+                        for (int f = 0; f < funcs.Count - 1; f++)
+                            if (funcs[f].getName == funcs[funcs.Count - 1].getName) found++;
+                        funcs[funcs.Count - 1].LLVMnumber = found;
                     }
                     else
                     {
@@ -197,7 +201,7 @@ namespace Compilat
                 MISC.ConsoleWriteLine("ERROR:\n" + e.Message, ConsoleColor.Red);
                 ClearTree();
                 return;
-            } 
+            }
             generatedTime.Add((DateTime.Now - data).Seconds * 1000 + (DateTime.Now - data).Milliseconds);
         }
 

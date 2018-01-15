@@ -2,7 +2,7 @@
 @_1CN = global i32 122, align 4
 @_2LIFE = global i32 42, align 4
 ; main int (  )
-define i32 @$3main() #3 {
+define i32 @main() #0 {
   %$1_1CN = load i32, i32* @_1CN
   %_0x = alloca i32
   store i32 10, i32* %_0x
